@@ -1,4 +1,4 @@
-# Beginner Blynk Dashboard Tutorial
+# Beginner Blynk.Edgent Wi-Fi and Dashboard Tutorial
 
 This tutorial connects the ESP32 irrigation controller to Blynk. It is written as a click-by-click class activity for learners who have not used Blynk before.
 
@@ -7,6 +7,8 @@ By the end, a learner can:
 - open only the template and device assigned to their group;
 - create four Virtual Pin datastreams;
 - build a mobile dashboard one widget at a time;
+- provision a 2.4 GHz Wi-Fi network to the ESP32 with Blynk.Edgent;
+- create the group's Blynk edge device from the mobile app;
 - read soil moisture on a phone;
 - request one five-second watering cycle; and
 - explain why the phone requests an action but the ESP32 enforces the safety timer.
@@ -21,7 +23,7 @@ This beginner stage uses the soil sensor on GPIO35 and irrigation relay 3 on GPI
 
 ![Blynk setup process from account sign-in to safe relay testing](assets/images/blynk-setup-process.png)
 
-Follow the six stages in order. Do not build the dashboard first and guess the datastreams later: every widget needs a datastream, every device needs a template, and the code needs credentials from the correct device.
+Follow the six stages in order. Do not build the dashboard first and guess the datastreams later: every widget needs a datastream, every edge device needs a template, and the ESP32 firmware must contain the correct Template ID and Template Name.
 
 ## Shared training account and group names
 
@@ -37,14 +39,16 @@ All groups can see the account's resources, so the names are the safety boundary
 
 | Group | Colour | Blynk template name | Blynk device name |
 | --- | --- | --- | --- |
-| 1 | Red | `Irrigation-G1` | `TU-Box-G1` |
-| 2 | Blue | `Irrigation-G2` | `TU-Box-G2` |
-| 3 | Green | `Irrigation-G3` | `TU-Box-G3` |
-| 4 | Yellow | `Irrigation-G4` | `TU-Box-G4` |
+| 1 | Red | `Irrigation G1` | `TU Box G1` |
+| 2 | Blue | `Irrigation G2` | `TU Box G2` |
+| 3 | Green | `Irrigation G3` | `TU Box G3` |
+| 4 | Yellow | `Irrigation G4` | `TU Box G4` |
 
-Each group has a **separate template** and a **separate device**. For example, Group 2 edits `Irrigation-G2`, opens `TU-Box-G2`, and uses the Auth Token from `TU-Box-G2`. It must not use `Irrigation-G1` with `TU-Box-G2`.
+Each group has a **separate template** and a **separate edge device**. For example, Group 2 edits `Irrigation G2` and provisions `TU Box G2`. It must not provision the Group 2 box from `Irrigation G1`.
 
-There is no template named `Student Irrigation Box` in this activity. The required template name is exactly `Irrigation-G1` for Group 1, `Irrigation-G2` for Group 2, `Irrigation-G3` for Group 3, or `Irrigation-G4` for Group 4. Capital letters, hyphens, and group numbers must match.
+There is no template named `Student Irrigation Box` in this activity. The required template name is exactly `Irrigation G1` for Group 1, `Irrigation G2` for Group 2, `Irrigation G3` for Group 3, or `Irrigation G4` for Group 4.
+
+**Do not type a dash or hyphen in a Blynk template name.** Blynk template names use letters, digits, and spaces. Copy the name exactly, including the single space before `G`.
 
 Before clicking anything, complete this station record:
 
@@ -59,7 +63,7 @@ Shared-account rules:
 1. Open only your group's template and device.
 2. Never rename or delete any template, device, datastream, or dashboard owned by another group.
 3. Never operate another group's watering control.
-4. Do not reuse another device's Auth Token.
+4. Do not provision an ESP32 from another group's template.
 5. Ask the instructor before signing out or changing account settings.
 6. If the displayed name does not match the station record, stop and return to the resource list.
 
@@ -67,8 +71,8 @@ Shared-account rules:
 
 | Object | Meaning in this lesson | Example for Group 1 |
 | --- | --- | --- |
-| Template | The reusable design: datastreams and dashboard layout | `Irrigation-G1` |
-| Device | The cloud record for one physical ESP32 box | `TU-Box-G1` |
+| Template | The reusable design: datastreams and dashboard layout | `Irrigation G1` |
+| Edge device | The physical ESP32 plus its Blynk cloud record | `TU Box G1` |
 | Datastream | A named data channel between Blynk and the ESP32 | `Soil Moisture (V0)` |
 | Widget | A gauge, switch, or value tile on the dashboard | Gauge connected to V0 |
 
@@ -94,6 +98,7 @@ Virtual Pins are communication channels, not ESP32 pins. `V1` does **not** mean 
 - Use a separate fused supply for a pump or valve. Never power a load from an ESP32 pin or USB port.
 - Keep mains-voltage wiring out of the student exercise. A qualified electrician must handle any mains load.
 - The ESP32 stops a watering cycle after five seconds even if the phone disconnects.
+- Provision only a trusted classroom 2.4 GHz Wi-Fi network. Do not use a personal hotspot unless the instructor approves it.
 - Supervise the system. The five-second timer is a classroom safeguard, not a complete field safety system.
 - Follow the voltage-domain rules in the [standalone hardware tutorial](README.md#important-safety-rules), especially if the shield voltage rail is set to 5 V.
 
@@ -102,12 +107,13 @@ Virtual Pins are communication channels, not ESP32 pins. `V1` does **not** mean 
 - ESP32 box with the soil sensor on GPIO35 and an active-low relay input on GPIO27
 - USB data cable and Arduino IDE
 - Blynk library for Arduino
-- Wi-Fi network the ESP32 may use
+- A 2.4 GHz Wi-Fi network the ESP32 may use; many ESP32 boards cannot join a 5 GHz-only network
+- Wi-Fi network name and password available privately during provisioning
 - Blynk mobile app on a phone or tablet
 - Shared account already signed in, or the instructor present to sign it in
 - Your completed group station record
 
-Do not publish a Wi-Fi password, account password, or Blynk Auth Token. Use a temporary or isolated training network when possible.
+Do not publish a Wi-Fi password, account password, or Blynk Auth Token. Blynk.Edgent sends the Wi-Fi credentials and a device token during provisioning, so they do not belong in the Arduino sketch. Use a temporary or isolated training network when possible.
 
 ## Part 1: Install the Blynk library
 
@@ -146,7 +152,7 @@ You should now see the class templates. Stop if the shared-account email or orga
 5. Return to the main screen.
 6. Tap **Developer Mode** or the **wrench/tool icon**, depending on the app version.
 
-Developer Mode is where a template's mobile layout is edited. The normal Devices view is where the live `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` device is operated.
+Developer Mode is where a template's mobile layout is edited. The normal Devices view is where the live `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` edge device is operated.
 
 ## Part 3: Open or create the assigned template
 
@@ -154,17 +160,17 @@ Developer Mode is where a template's mobile layout is edited. The normal Devices
 
 1. In the web console, click **Developer Zone > My Templates**.
 2. Read your station record.
-3. Find the exact assigned name: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
+3. Find the exact assigned name: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
 4. Click the template name once.
 5. Confirm the name at the top of the page before editing.
 
-Do not click **+ New Template** when your assigned template already exists. A name such as `Irrigation-G1 copy` is not an acceptable replacement.
+Do not click **+ New Template** when your assigned template already exists. A name such as `Irrigation G1 copy` is not an acceptable replacement.
 
 ### If the instructor asks your group to create a missing template
 
 1. Click **Developer Zone > My Templates**.
 2. Click **+ New Template**.
-3. In **Name**, type your assigned template name exactly.
+3. In **Name**, type your assigned template name exactly. Use the space shown in `Irrigation G1`; do not type a dash.
 4. In **Hardware**, choose **ESP32**.
 5. In **Connection Type** or **Connectivity**, choose **WiFi**.
 6. Click **Done** or **Create**.
@@ -177,7 +183,7 @@ If a template is missing and you were not instructed to create it, stop and tell
 
 Repeat the following click path once for each row in the table.
 
-1. Open `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4` according to your group number.
+1. Open `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4` according to your group number.
 2. Click the **Datastreams** tab.
 3. Click **Edit** if the page is read-only.
 4. Click **+ New Datastream**.
@@ -200,50 +206,36 @@ Repeat the following click path once for each row in the table.
 
 Checkpoint: the template must show exactly four datastreams using V0, V1, V2, and V3 once each. If a pin is duplicated, edit the incorrect row before continuing. Blynk's official [datastream setup guide](https://docs.blynk.io/en/getting-started/template-quick-setup/set-up-datastreams) includes the current console workflow.
 
-## Part 5: Create or open the assigned device
+## Part 5: Prepare Blynk.Edgent
 
-First check whether the device already exists:
+This lesson uses **Blynk.Edgent dynamic provisioning**. The ESP32 first broadcasts a temporary setup Wi-Fi network. The Blynk app connects to it, sends the classroom Wi-Fi details, requests a unique device token, and creates the edge device in the shared account.
 
-1. Click **Search** or **Devices** in the left navigation.
+Do not create the device manually in Blynk.Console and do not paste a Wi-Fi password or Auth Token into the sketch.
+
+### Check for an older device record
+
+1. In Blynk.Console, click **Search** or **Devices**.
 2. Click **My Devices** if that submenu appears.
-3. Find your assigned device name, such as `TU-Box-G2`.
-4. If it exists, click it and skip to **Copy the device credentials** below.
+3. Look for the exact device name assigned to the group: `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4`.
+4. If that device already exists, stop and tell the instructor. The instructor must decide whether to reconfigure that record or use a freshly reset ESP32. Do not delete it.
 
-Create it only if it is missing and the instructor tells you to:
+### Copy the template firmware values
 
-1. Click **+ New Device**.
-2. If Blynk asks for a creation method, click **From Template**.
-3. Open the **Template** dropdown.
-4. Choose your exact assigned template, such as `Irrigation-G2`.
-5. In **Device Name**, type the matching assigned device name, such as `TU-Box-G2`.
-6. Click **Create**.
-7. Confirm that the template and device group numbers match.
-
-### Copy the device credentials
-
-1. Open `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` according to your group number.
-2. Click **Device Info** or **Developer Tools**. The label varies by console version.
-3. Find the firmware configuration snippet.
-4. Use the **copy icon** if available and copy these three definitions into a temporary private note:
-
-```cpp
-#define BLYNK_TEMPLATE_ID "..."
-#define BLYNK_AUTH_TOKEN  "..."
-```
-
-5. Record the exact template-name line shown for your group:
+1. Click **Developer Zone > My Templates**.
+2. Open the exact group template: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
+3. Open the **Home** or **Info** tab.
+4. Find **Firmware Configuration**.
+5. Copy the displayed `BLYNK_TEMPLATE_ID` into a temporary note.
+6. Confirm that the displayed `BLYNK_TEMPLATE_NAME` is the exact group name below.
 
 | Group | Required template-name line |
 | --- | --- |
-| 1 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G1"` |
-| 2 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G2"` |
-| 3 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G3"` |
-| 4 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G4"` |
+| 1 | `#define BLYNK_TEMPLATE_NAME "Irrigation G1"` |
+| 2 | `#define BLYNK_TEMPLATE_NAME "Irrigation G2"` |
+| 3 | `#define BLYNK_TEMPLATE_NAME "Irrigation G3"` |
+| 4 | `#define BLYNK_TEMPLATE_NAME "Irrigation G4"` |
 
-6. Verify that the name exactly matches your station record.
-7. Keep the Auth Token private. Do not commit it to Git or place it in a screenshot.
-
-Each physical box needs its own Blynk device and Auth Token. Never copy the token from `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` unless it is your assigned device. See Blynk's [manual activation guide](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation).
+The Template ID is generated by Blynk, so the tutorial cannot predict it. The Template Name is fixed by the group table and contains spaces, not dashes. Blynk.Edgent assigns the Auth Token automatically during provisioning. See Blynk's official [Wi-Fi provisioning guide](https://docs.blynk.io/en/getting-started/activating-devices/blynk-edgent-wifi-provisioning).
 
 ## Part 6: Build the mobile dashboard
 
@@ -261,7 +253,7 @@ The image is a learning illustration, not a literal screenshot. If an icon has m
 4. Return to the main screen.
 5. Tap **Developer Mode** or the **wrench/tool icon**.
 6. Find your exact template name.
-7. Tap the exact template for your group: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
+7. Tap the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
 8. Confirm the template name at the top before adding a widget.
 
 ### Add the Soil Moisture gauge
@@ -316,7 +308,7 @@ Do not test this control yet. The ESP32 code and no-load safety test must be rea
 3. Place the gauge at the top, the watering control below it, and the two status values at the bottom.
 4. Open each widget once more and read its selected datastream aloud.
 5. Leave Developer Mode.
-6. Open **Devices**, then tap the exact device for your group: `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4`.
+6. Do not look for the live device yet. Blynk.Edgent creates it during Wi-Fi provisioning in Part 8.
 
 Expected live layout:
 
@@ -336,7 +328,7 @@ Expected live layout:
 Do this only after the mobile layout works.
 
 1. In Blynk.Console, click **Developer Zone > My Templates**.
-2. Open the exact template for your group: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
+2. Open the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
 3. Click the **Web Dashboard** tab.
 4. Click **Edit** at the top-right.
 5. Drag a **Gauge** from the Widget Box to the dashboard.
@@ -344,37 +336,44 @@ Do this only after the mobile layout works.
 7. Add a **Switch** connected to `Water 5 Seconds (V1)`.
 8. Add value/label widgets for `Pump State (V2)` and `Device Status (V3)`.
 9. Click **Save**.
-10. To see live values, click **Search > My Devices**, open the matching `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` device, and click its **Dashboard** tab.
+10. After Part 8 creates the edge device, click **Search > My Devices**, open the matching `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` device, and click its **Dashboard** tab.
 
-## Part 7: Upload the beginner sketch
+## Part 7: Build and upload the Blynk.Edgent sketch
 
-Create a new Arduino sketch and copy all of the code below. Change `CLASS_GROUP` to `1`, `2`, `3`, or `4`. The sketch then selects the exact required template name. Copy `BLYNK_TEMPLATE_ID` and `BLYNK_AUTH_TOKEN` from the matching device, then replace the Wi-Fi placeholders.
+Blynk.Edgent uses several supporting tabs. Do not start with an empty one-file sketch.
+
+1. Open Arduino IDE.
+2. Click **File > Examples > Blynk > Blynk.Edgent > Edgent_ESP32**.
+3. Click **File > Save As** and save a working copy named `Irrigation_Edgent_G1`, `Irrigation_Edgent_G2`, `Irrigation_Edgent_G3`, or `Irrigation_Edgent_G4`.
+4. Confirm that the Arduino editor shows the main `.ino` tab plus supporting tabs such as `BlynkEdgent.h` and `Settings.h`.
+5. Open the main `.ino` tab. Replace its contents with the code below. Do not delete or rename the supporting tabs.
+6. Change `CLASS_GROUP` to the station's group number.
+7. Replace `YOUR_TEMPLATE_ID` with the Template ID copied from that group's template.
+8. Leave `BLYNK_TEMPLATE_NAME` exactly as selected by the group block. Do not add a dash.
 
 ```cpp
 #define BLYNK_PRINT Serial
+#define APP_DEBUG
+#define USE_ESP32_DEV_MODULE
+#define BLYNK_FIRMWARE_VERSION "0.1.0"
+
 #define CLASS_GROUP 1  // Change to 1, 2, 3, or 4 for this station
 
 #define BLYNK_TEMPLATE_ID   "YOUR_TEMPLATE_ID"
-#define BLYNK_AUTH_TOKEN    "YOUR_DEVICE_AUTH_TOKEN"
 
 #if CLASS_GROUP == 1
-  #define BLYNK_TEMPLATE_NAME "Irrigation-G1"
+  #define BLYNK_TEMPLATE_NAME "Irrigation G1"
 #elif CLASS_GROUP == 2
-  #define BLYNK_TEMPLATE_NAME "Irrigation-G2"
+  #define BLYNK_TEMPLATE_NAME "Irrigation G2"
 #elif CLASS_GROUP == 3
-  #define BLYNK_TEMPLATE_NAME "Irrigation-G3"
+  #define BLYNK_TEMPLATE_NAME "Irrigation G3"
 #elif CLASS_GROUP == 4
-  #define BLYNK_TEMPLATE_NAME "Irrigation-G4"
+  #define BLYNK_TEMPLATE_NAME "Irrigation G4"
 #else
   #error "CLASS_GROUP must be 1, 2, 3, or 4"
 #endif
 
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <BlynkSimpleEsp32.h>
-
-char wifiName[] = "YOUR_WIFI_NAME";
-char wifiPassword[] = "YOUR_WIFI_PASSWORD";
+#include "BlynkEdgent.h"
 
 const int soilPin = 35;
 const int irrigationRelay = 27;
@@ -392,8 +391,10 @@ unsigned long wateringStartedAt = 0;
 void stopWatering() {
   digitalWrite(irrigationRelay, HIGH);  // Active-low relay: HIGH is off
   watering = false;
-  Blynk.virtualWrite(V2, 0);
-  Blynk.virtualWrite(V3, "READY");
+  if (Blynk.connected()) {
+    Blynk.virtualWrite(V2, 0);
+    Blynk.virtualWrite(V3, "READY");
+  }
 }
 
 void startWatering() {
@@ -424,7 +425,9 @@ void sendSensorData() {
   int soilPercent = map(soilRaw, soilRawDry, soilRawWet, 0, 100);
   soilPercent = constrain(soilPercent, 0, 100);
 
-  Blynk.virtualWrite(V0, soilPercent);
+  if (Blynk.connected()) {
+    Blynk.virtualWrite(V0, soilPercent);
+  }
 
   Serial.print("Soil raw: ");
   Serial.print(soilRaw);
@@ -441,17 +444,18 @@ BLYNK_CONNECTED() {
 
 void setup() {
   Serial.begin(115200);
+  delay(100);
 
   pinMode(soilPin, INPUT);
   pinMode(irrigationRelay, OUTPUT);
   digitalWrite(irrigationRelay, HIGH);  // Keep pump off during startup
 
-  Blynk.begin(BLYNK_AUTH_TOKEN, wifiName, wifiPassword);
+  BlynkEdgent.begin();
   timer.setInterval(2000L, sendSensorData);
 }
 
 void loop() {
-  Blynk.run();
+  BlynkEdgent.run();
   timer.run();
 
   // This local timer still stops the relay if the phone loses connection.
@@ -463,24 +467,92 @@ void loop() {
 
 The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not put an unrestricted `Blynk.virtualWrite()` in `loop()`: Blynk warns that sending on every loop can flood the cloud connection. See [Send Data From Hardware to Blynk](https://docs.blynk.io/en/getting-started/how-to-display-any-sensor-data-in-blynk-app).
 
-Do not upload while `YOUR_TEMPLATE_ID`, `YOUR_DEVICE_AUTH_TOKEN`, `YOUR_WIFI_NAME`, or `YOUR_WIFI_PASSWORD` remains in the sketch. Before uploading, confirm that `CLASS_GROUP` matches the group number printed on the irrigation box.
+`BlynkEdgent.begin()` starts dynamic provisioning and `BlynkEdgent.run()` maintains provisioning, Wi-Fi, cloud connectivity, and the application connection. Do not add `BLYNK_AUTH_TOKEN`, `wifiName`, `wifiPassword`, or `Blynk.begin(...)` to this Edgent sketch.
 
-## Part 8: Test without a pump
+Before uploading:
 
-1. Disconnect the pump or valve from the relay contacts.
-2. Upload the sketch.
-3. Open Serial Monitor at 115200 baud.
-4. Wait for Blynk to report that the device is ready or online.
-5. Check that the mobile dashboard shows a changing moisture value.
-6. Tap **Water 5 Seconds** once.
-7. Confirm that the GPIO27 relay indicator turns on, `Pump State` changes to 1, and `Device Status` shows `WATERING`.
-8. Confirm that the relay turns off after about five seconds and the dashboard returns to `Pump State = 0` and `READY`.
-9. Turn off the phone's Wi-Fi during a new test. Confirm that the relay still turns off after five seconds.
-10. Repeat the test three times before connecting a real load.
+1. Confirm that `YOUR_TEMPLATE_ID` has been replaced.
+2. Confirm that `CLASS_GROUP` matches the group number printed on the irrigation box.
+3. Confirm that **Tools > Board** is the correct ESP32 board and **Tools > Port** is the box's USB port.
+4. Keep the pump or valve disconnected from the relay contacts.
+5. Click **Upload**.
+6. Open **Serial Monitor** at 115200 baud after the upload finishes.
+
+The example defines the ESP32 BOOT button on GPIO0 as the Edgent reset button. It does not use GPIO27 or GPIO35. Do not change `Settings.h` during this beginner activity.
+
+## Part 8: Provision Wi-Fi and create the edge device
+
+Provisioning creates the device and securely gives the ESP32 its network credentials and unique Auth Token. Keep Serial Monitor open so the instructor can see each state change.
+
+### Prepare the phone and ESP32
+
+1. Connect the phone to the classroom's **2.4 GHz Wi-Fi** network.
+2. Confirm that the phone can reach the internet on that network.
+3. Turn on the ESP32 and wait for its Edgent setup mode. Serial Monitor should indicate that it is waiting for configuration.
+4. Open **Blynk IoT** and confirm that `itetu.training@gmail.com` is signed in.
+5. Allow **Nearby devices**, **Local network**, or **Location** permission if the operating system requests it. Blynk needs the relevant permission to discover the ESP32 setup network.
+
+### Add and connect the edge device
+
+1. Open the app's **menu icon** at the top-right.
+2. Tap **+ Add New Device** or **Add new device**.
+3. Tap **Find Devices Nearby**.
+4. Tap **Start** or **Ready**.
+5. Wait for the device list. Select the setup device whose name begins with `Blynk` and contains your exact template name, such as `Irrigation G2`.
+6. If iOS opens system Wi-Fi settings, select that Blynk setup network, return to the Blynk app, and tap **Already connected**.
+7. On **Connect your device to WiFi**, tap **Choose Wi-Fi network**.
+8. Select the approved classroom 2.4 GHz network. Do not choose a 5 GHz-only or browser-sign-in network.
+9. Enter the Wi-Fi password privately.
+10. Leave **Remember this network** off on a shared device unless the instructor specifically wants Blynk to retain it for the next group.
+11. Tap **Continue**.
+12. Keep the phone close to the ESP32 and wait. Do not close the app, unplug the ESP32, or switch networks while it shows connecting or configuring.
+13. When Blynk reports that the device is connected, tap **Continue**.
+
+### Name and verify the device
+
+1. In **Device Name**, enter the exact space-separated name from the group table:
+
+   - Group 1: `TU Box G1`
+   - Group 2: `TU Box G2`
+   - Group 3: `TU Box G3`
+   - Group 4: `TU Box G4`
+
+2. Do not type a dash or hyphen.
+3. Review the device profile and confirm that its template and group number match.
+4. Tap **Apply**.
+5. Tap **Continue**.
+6. Tap **Exit to app**.
+7. Open **Devices** and tap the newly created `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` tile.
+8. Confirm that the device shows **Online** and that the four-widget mobile dashboard appears.
+
+Under the hood, the ESP32 temporarily operates as a Wi-Fi access point. The phone sends the selected network credentials to it, Blynk supplies a unique Auth Token, the ESP32 stores the values in flash memory, and then it restarts and connects to Blynk.Cloud. The Wi-Fi password and token are not stored in this repository.
+
+### If provisioning fails
+
+- Read Serial Monitor before trying again. It normally reveals whether the ESP32 cannot join Wi-Fi or cannot reach Blynk.Cloud.
+- Confirm that the Template ID and Template Name in the sketch exactly match the selected group template.
+- Confirm that the Wi-Fi network is 2.4 GHz and does not require a browser login page.
+- If an existing device record must keep its data, open that device in the app, open its action menu, and choose **Reconfigure**. Do not create a duplicate.
+- With the instructor present, holding the ESP32 **BOOT** button for about 10 seconds while the Edgent firmware is running clears locally stored provisioning credentials and returns it to setup mode.
+- Never delete another group's device while troubleshooting.
+
+For the underlying sequence and current app screens, see Blynk's [Edgent Wi-Fi provisioning guide](https://docs.blynk.io/en/getting-started/activating-devices/blynk-edgent-wifi-provisioning) and [Add New Device guide](https://docs.blynk.io/en/blynk.apps/device-management/add-new-device).
+
+## Part 9: Test without a pump
+
+1. Confirm again that the pump or valve is disconnected from the relay contacts.
+2. Open Serial Monitor at 115200 baud.
+3. Wait for Blynk to report that the device is ready or online.
+4. Check that the mobile dashboard shows a changing moisture value.
+5. Tap **Water 5 Seconds** once.
+6. Confirm that the GPIO27 relay indicator turns on, `Pump State` changes to 1, and `Device Status` shows `WATERING`.
+7. Confirm that the relay turns off after about five seconds and the dashboard returns to `Pump State = 0` and `READY`.
+8. Turn off the phone's Wi-Fi during a new test. Confirm that the relay still turns off after five seconds.
+9. Repeat the test three times before connecting a real load.
 
 Stop immediately if the relay turns on during ESP32 reset, remains on longer than five seconds, or behaves opposite to the comments in the code. The relay board may not match the expected active-low design.
 
-## Part 9: Supervised water test
+## Part 10: Supervised water test
 
 Only continue after the no-load test passes.
 
@@ -501,6 +573,8 @@ Complete this table during the test.
 | Observation | Expected result | Actual result |
 | --- | --- | --- |
 | ESP32 starts | Relay remains off | |
+| Edgent setup begins | App discovers the correct group template | |
+| Wi-Fi provisioning finishes | Correct `TU Box G1`–`TU Box G4` device is online | |
 | Soil probe in dry sample | Moisture moves toward 0% | |
 | Soil probe in moist sample | Moisture moves toward 100% | |
 | Phone control pressed once | Relay turns on | |
@@ -512,14 +586,19 @@ Answer these questions:
 1. What is the difference between GPIO27 and Virtual Pin V1?
 2. Why does the program use a timer instead of leaving the phone switch in control of the relay?
 3. What additional sensor should prevent a pump from running with an empty tank?
+4. Why are the Wi-Fi password and Auth Token not written in the Edgent sketch?
 
 ## Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| Sketch does not compile | Install the Blynk library and confirm the ESP32 board package is selected |
-| Device stays offline | Check the network name, password, Auth Token, and that a compatible 2.4 GHz network without a browser sign-in page is reachable by the ESP32 |
-| Authentication error | Copy the Auth Token from the correct Blynk device, not from another student's device |
+| Sketch does not compile | Update the Blynk library, open the `Edgent_ESP32` example, keep all supporting tabs, and confirm the ESP32 board package is selected |
+| ESP32 does not appear in **Find Devices Nearby** | Check Serial Monitor for waiting/configuration mode, allow nearby/local-network permissions, and confirm Template ID and Template Name are exact |
+| App cannot send Wi-Fi settings | Keep the phone near the ESP32; on iOS, connect to the Blynk setup network in Settings and return to the app |
+| ESP32 cannot join the network | Choose a 2.4 GHz network, re-enter its password, and avoid captive-portal or browser-sign-in networks |
+| Device stays offline after provisioning | Read Serial Monitor, verify internet access to Blynk.Cloud, and use **Reconfigure** rather than creating a duplicate |
+| Edgent reports an authentication/configuration error | Remove any manually defined `BLYNK_AUTH_TOKEN`; confirm the group Template ID and space-separated Template Name, then reset and provision again |
+| Duplicate device name appears | Stop and tell the instructor; do not delete or rename another group's device |
 | Dashboard has no values | Confirm that widgets use V0, V1, V2, and V3 exactly as listed |
 | Moisture is always 0% or 100% | Record the raw serial readings and replace `soilRawDry` and `soilRawWet` with measured values |
 | Button changes but relay does not | Check the V1 datastream, GPIO27 wiring, common ground, and relay input-voltage compatibility |
