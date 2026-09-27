@@ -44,6 +44,8 @@ All groups can see the account's resources, so the names are the safety boundary
 
 Each group has a **separate template** and a **separate device**. For example, Group 2 edits `Irrigation-G2`, opens `TU-Box-G2`, and uses the Auth Token from `TU-Box-G2`. It must not use `Irrigation-G1` with `TU-Box-G2`.
 
+There is no template named `Student Irrigation Box` in this activity. The required template name is exactly `Irrigation-G1` for Group 1, `Irrigation-G2` for Group 2, `Irrigation-G3` for Group 3, or `Irrigation-G4` for Group 4. Capital letters, hyphens, and group numbers must match.
+
 Before clicking anything, complete this station record:
 
 ```text
@@ -144,7 +146,7 @@ You should now see the class templates. Stop if the shared-account email or orga
 5. Return to the main screen.
 6. Tap **Developer Mode** or the **wrench/tool icon**, depending on the app version.
 
-Developer Mode is where a template's mobile layout is edited. The normal Devices view is where the live `TU-Box-Gx` device is operated.
+Developer Mode is where a template's mobile layout is edited. The normal Devices view is where the live `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` device is operated.
 
 ## Part 3: Open or create the assigned template
 
@@ -175,7 +177,7 @@ If a template is missing and you were not instructed to create it, stop and tell
 
 Repeat the following click path once for each row in the table.
 
-1. Open your assigned template.
+1. Open `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4` according to your group number.
 2. Click the **Datastreams** tab.
 3. Click **Edit** if the page is read-only.
 4. Click **+ New Datastream**.
@@ -219,21 +221,29 @@ Create it only if it is missing and the instructor tells you to:
 
 ### Copy the device credentials
 
-1. Open your `TU-Box-Gx` device.
+1. Open `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` according to your group number.
 2. Click **Device Info** or **Developer Tools**. The label varies by console version.
 3. Find the firmware configuration snippet.
 4. Use the **copy icon** if available and copy these three definitions into a temporary private note:
 
 ```cpp
-#define BLYNK_TEMPLATE_ID   "..."
-#define BLYNK_TEMPLATE_NAME "Irrigation-Gx"
-#define BLYNK_AUTH_TOKEN    "..."
+#define BLYNK_TEMPLATE_ID "..."
+#define BLYNK_AUTH_TOKEN  "..."
 ```
 
-5. Verify that `BLYNK_TEMPLATE_NAME` exactly matches your station record.
-6. Keep the Auth Token private. Do not commit it to Git or place it in a screenshot.
+5. Record the exact template-name line shown for your group:
 
-Each physical box needs its own Blynk device and Auth Token. Never copy the token from another `TU-Box-Gx` device. See Blynk's [manual activation guide](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation).
+| Group | Required template-name line |
+| --- | --- |
+| 1 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G1"` |
+| 2 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G2"` |
+| 3 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G3"` |
+| 4 | `#define BLYNK_TEMPLATE_NAME "Irrigation-G4"` |
+
+6. Verify that the name exactly matches your station record.
+7. Keep the Auth Token private. Do not commit it to Git or place it in a screenshot.
+
+Each physical box needs its own Blynk device and Auth Token. Never copy the token from `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` unless it is your assigned device. See Blynk's [manual activation guide](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation).
 
 ## Part 6: Build the mobile dashboard
 
@@ -251,7 +261,7 @@ The image is a learning illustration, not a literal screenshot. If an icon has m
 4. Return to the main screen.
 5. Tap **Developer Mode** or the **wrench/tool icon**.
 6. Find your exact template name.
-7. Tap only your assigned `Irrigation-Gx` template.
+7. Tap the exact template for your group: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
 8. Confirm the template name at the top before adding a widget.
 
 ### Add the Soil Moisture gauge
@@ -306,7 +316,7 @@ Do not test this control yet. The ESP32 code and no-load safety test must be rea
 3. Place the gauge at the top, the watering control below it, and the two status values at the bottom.
 4. Open each widget once more and read its selected datastream aloud.
 5. Leave Developer Mode.
-6. Open **Devices**, then tap your assigned `TU-Box-Gx` device to reach the live dashboard.
+6. Open **Devices**, then tap the exact device for your group: `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4`.
 
 Expected live layout:
 
@@ -326,7 +336,7 @@ Expected live layout:
 Do this only after the mobile layout works.
 
 1. In Blynk.Console, click **Developer Zone > My Templates**.
-2. Open your assigned `Irrigation-Gx` template.
+2. Open the exact template for your group: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
 3. Click the **Web Dashboard** tab.
 4. Click **Edit** at the top-right.
 5. Drag a **Gauge** from the Widget Box to the dashboard.
@@ -334,17 +344,30 @@ Do this only after the mobile layout works.
 7. Add a **Switch** connected to `Water 5 Seconds (V1)`.
 8. Add value/label widgets for `Pump State (V2)` and `Device Status (V3)`.
 9. Click **Save**.
-10. To see live values, click **Search > My Devices**, open your `TU-Box-Gx` device, and click its **Dashboard** tab.
+10. To see live values, click **Search > My Devices**, open the matching `TU-Box-G1`, `TU-Box-G2`, `TU-Box-G3`, or `TU-Box-G4` device, and click its **Dashboard** tab.
 
 ## Part 7: Upload the beginner sketch
 
-Create a new Arduino sketch. Copy all of the code below. Then replace the three Blynk definitions with the exact snippet from your own `TU-Box-Gx` device and replace the Wi-Fi placeholders. The template name in code must match `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4` exactly.
+Create a new Arduino sketch and copy all of the code below. Change `CLASS_GROUP` to `1`, `2`, `3`, or `4`. The sketch then selects the exact required template name. Copy `BLYNK_TEMPLATE_ID` and `BLYNK_AUTH_TOKEN` from the matching device, then replace the Wi-Fi placeholders.
 
 ```cpp
 #define BLYNK_PRINT Serial
+#define CLASS_GROUP 1  // Change to 1, 2, 3, or 4 for this station
+
 #define BLYNK_TEMPLATE_ID   "YOUR_TEMPLATE_ID"
-#define BLYNK_TEMPLATE_NAME "YOUR_ASSIGNED_TEMPLATE_NAME"
 #define BLYNK_AUTH_TOKEN    "YOUR_DEVICE_AUTH_TOKEN"
+
+#if CLASS_GROUP == 1
+  #define BLYNK_TEMPLATE_NAME "Irrigation-G1"
+#elif CLASS_GROUP == 2
+  #define BLYNK_TEMPLATE_NAME "Irrigation-G2"
+#elif CLASS_GROUP == 3
+  #define BLYNK_TEMPLATE_NAME "Irrigation-G3"
+#elif CLASS_GROUP == 4
+  #define BLYNK_TEMPLATE_NAME "Irrigation-G4"
+#else
+  #error "CLASS_GROUP must be 1, 2, 3, or 4"
+#endif
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -440,7 +463,7 @@ void loop() {
 
 The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not put an unrestricted `Blynk.virtualWrite()` in `loop()`: Blynk warns that sending on every loop can flood the cloud connection. See [Send Data From Hardware to Blynk](https://docs.blynk.io/en/getting-started/how-to-display-any-sensor-data-in-blynk-app).
 
-Do not upload while `YOUR_TEMPLATE_ID`, `YOUR_ASSIGNED_TEMPLATE_NAME`, `YOUR_DEVICE_AUTH_TOKEN`, `YOUR_WIFI_NAME`, or `YOUR_WIFI_PASSWORD` remains in the sketch. For Group 3, for example, the template-name line must contain `"Irrigation-G3"`.
+Do not upload while `YOUR_TEMPLATE_ID`, `YOUR_DEVICE_AUTH_TOKEN`, `YOUR_WIFI_NAME`, or `YOUR_WIFI_PASSWORD` remains in the sketch. Before uploading, confirm that `CLASS_GROUP` matches the group number printed on the irrigation box.
 
 ## Part 8: Test without a pump
 
