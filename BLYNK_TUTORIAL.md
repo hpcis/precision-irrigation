@@ -1,37 +1,87 @@
-# Beginner Blynk Mobile-Control Tutorial
+# Beginner Blynk Dashboard Tutorial
 
-This second tutorial connects the ESP32 irrigation controller to the Blynk mobile app. It is designed for students with little programming experience and builds only one small, testable feature at a time.
+This tutorial connects the ESP32 irrigation controller to Blynk. It is written as a click-by-click class activity for learners who have not used Blynk before.
 
-By the end, a student can:
+By the end, a learner can:
 
+- open only the template and device assigned to their group;
+- create four Virtual Pin datastreams;
+- build a mobile dashboard one widget at a time;
 - read soil moisture on a phone;
-- press a phone control to request watering;
-- see whether the irrigation relay is on; and
-- explain how a Blynk Virtual Pin connects a phone widget to ESP32 code.
+- request one five-second watering cycle; and
+- explain why the phone requests an action but the ESP32 enforces the safety timer.
 
-Return to the [standalone ESP32 irrigation tutorial](README.md) if the soil sensor and GPIO27 relay have not already been tested locally.
+Return to the [standalone ESP32 irrigation tutorial](README.md) if the soil sensor and GPIO27 relay have not already passed the local tests.
 
 ![Finished irrigation box prepared for a presentation slide](assets/images/irrigation-box-finished-transparent.png)
 
-This stage uses only the soil sensor on GPIO35 and the irrigation relay on GPIO27. The other modules may remain mounted, but the beginner Blynk sketch does not read or control them.
+This beginner stage uses the soil sensor on GPIO35 and irrigation relay 3 on GPIO27. The other modules may remain mounted, but this sketch does not control them.
 
-## What the system will do
+## The complete learning path
+
+![Blynk setup process from account sign-in to safe relay testing](assets/images/blynk-setup-process.png)
+
+Follow the six stages in order. Do not build the dashboard first and guess the datastreams later: every widget needs a datastream, every device needs a template, and the code needs credentials from the correct device.
+
+## Shared training account and group names
+
+Use the classroom Blynk account:
 
 ```text
-Soil sensor -> ESP32 -> Wi-Fi -> Blynk Cloud -> phone gauge
-Phone button -> Blynk Cloud -> ESP32 -> GPIO27 relay -> pump or valve
+Email: itetu.training@gmail.com
 ```
 
-The phone does not drive GPIO27 directly. It sends a value through a Blynk **datastream**. The ESP32 receives that value on a **Virtual Pin**, checks the safety rules, and then operates the relay.
+The instructor should sign in before the activity or enter the password privately. Learners must not write the password in this repository, a slide, a screenshot, or a group chat. Do not change the password, sign the account out of another station, or change account settings.
+
+All groups can see the account's resources, so the names are the safety boundary. Use the row assigned by the instructor and copy its spelling exactly.
+
+| Group | Colour | Blynk template name | Blynk device name |
+| --- | --- | --- | --- |
+| 1 | Red | `Irrigation-G1` | `TU-Box-G1` |
+| 2 | Blue | `Irrigation-G2` | `TU-Box-G2` |
+| 3 | Green | `Irrigation-G3` | `TU-Box-G3` |
+| 4 | Yellow | `Irrigation-G4` | `TU-Box-G4` |
+
+Each group has a **separate template** and a **separate device**. For example, Group 2 edits `Irrigation-G2`, opens `TU-Box-G2`, and uses the Auth Token from `TU-Box-G2`. It must not use `Irrigation-G1` with `TU-Box-G2`.
+
+Before clicking anything, complete this station record:
+
+```text
+Our group number: ____________________
+Our template name: ___________________
+Our device name: _____________________
+```
+
+Shared-account rules:
+
+1. Open only your group's template and device.
+2. Never rename or delete any template, device, datastream, or dashboard owned by another group.
+3. Never operate another group's watering control.
+4. Do not reuse another device's Auth Token.
+5. Ask the instructor before signing out or changing account settings.
+6. If the displayed name does not match the station record, stop and return to the resource list.
+
+## Understand the four Blynk objects
+
+| Object | Meaning in this lesson | Example for Group 1 |
+| --- | --- | --- |
+| Template | The reusable design: datastreams and dashboard layout | `Irrigation-G1` |
+| Device | The cloud record for one physical ESP32 box | `TU-Box-G1` |
+| Datastream | A named data channel between Blynk and the ESP32 | `Soil Moisture (V0)` |
+| Widget | A gauge, switch, or value tile on the dashboard | Gauge connected to V0 |
+
+The phone does not drive GPIO27 directly. It sends a value through a Blynk datastream. The ESP32 receives the Virtual Pin value, checks its local rules, and then operates the physical relay.
+
+![Concept map showing sensor data moving to Blynk and a watering request returning to the ESP32](assets/images/blynk-learning-map.png)
 
 | Name | Virtual Pin | Direction | Purpose |
 | --- | --- | --- | --- |
-| Soil Moisture | V0 | ESP32 to phone | Moisture from 0 to 100 percent |
-| Water 5 Seconds | V1 | Phone to ESP32 | A value of 1 requests one short watering cycle |
-| Pump State | V2 | ESP32 to phone | Shows 0 for off or 1 for on |
-| Device Status | V3 | ESP32 to phone | Shows a short status message |
+| Soil Moisture | V0 | ESP32 to dashboard | Moisture from 0 to 100 percent |
+| Water 5 Seconds | V1 | Dashboard to ESP32 | A value of 1 requests one short watering cycle |
+| Pump State | V2 | ESP32 to dashboard | Shows 0 for off or 1 for on |
+| Device Status | V3 | ESP32 to dashboard | Shows `READY` or `WATERING` |
 
-Virtual Pins are communication channels, not ESP32 GPIO numbers. `V1` therefore does **not** mean GPIO1. Blynk recommends Virtual Pin datastreams when app data must be processed by the microcontroller. See Blynk's [Virtual Pins documentation](https://docs.blynk.io/en/blynk-library-firmware-api/virtual-pins) and [device-control guide](https://docs.blynk.io/en/getting-started/using-virtual-pins-to-control-physical-devices).
+Virtual Pins are communication channels, not ESP32 pins. `V1` does **not** mean GPIO1. The physical soil input is GPIO35 and the physical irrigation relay output is GPIO27. See Blynk's [Virtual Pins documentation](https://docs.blynk.io/en/blynk-library-firmware-api/virtual-pins) and [device-control guide](https://docs.blynk.io/en/getting-started/using-virtual-pins-to-control-physical-devices).
 
 ## Safety before connecting Blynk
 
@@ -41,77 +91,224 @@ Virtual Pins are communication channels, not ESP32 GPIO numbers. `V1` therefore 
 - Keep the ESP32, relay logic, and student wiring at safe low voltage.
 - Use a separate fused supply for a pump or valve. Never power a load from an ESP32 pin or USB port.
 - Keep mains-voltage wiring out of the student exercise. A qualified electrician must handle any mains load.
-- The example stops a watering cycle after five seconds even if the phone disconnects.
+- The ESP32 stops a watering cycle after five seconds even if the phone disconnects.
 - Supervise the system. The five-second timer is a classroom safeguard, not a complete field safety system.
 - Follow the voltage-domain rules in the [standalone hardware tutorial](README.md#important-safety-rules), especially if the shield voltage rail is set to 5 V.
 
 ## Before you begin
 
-- An ESP32 with the soil sensor connected to GPIO35
-- A 3.3 V-input-compatible active-low relay module connected to GPIO27
-- A USB data cable and Arduino IDE
-- A Wi-Fi network the ESP32 may use
-- A Blynk account and the Blynk mobile app
-- Optionally, a Blynk template that your teacher prepared for the class
+- ESP32 box with the soil sensor on GPIO35 and an active-low relay input on GPIO27
+- USB data cable and Arduino IDE
+- Blynk library for Arduino
+- Wi-Fi network the ESP32 may use
+- Blynk mobile app on a phone or tablet
+- Shared account already signed in, or the instructor present to sign it in
+- Your completed group station record
 
-Do not publish a real Wi-Fi password or Blynk Auth Token in screenshots, shared documents, or a public repository. For a classroom, use a temporary or isolated training network when possible.
+Do not publish a Wi-Fi password, account password, or Blynk Auth Token. Use a temporary or isolated training network when possible.
 
 ## Part 1: Install the Blynk library
 
 1. Open Arduino IDE.
-2. Select **Tools > Manage Libraries**.
-3. Search for `Blynk`.
-4. Install the library published by Volodymyr Shymanskyy.
-5. Confirm that **File > Examples > Blynk** now appears.
+2. Click **Tools > Manage Libraries**.
+3. Click the search field and type `Blynk`.
+4. Find the library published by Volodymyr Shymanskyy.
+5. Click **Install**.
+6. Wait for the installation to finish.
+7. Click **File > Examples > Blynk** to confirm that the examples appear.
 
-Keep the ESP32 board package and USB port settings from the first tutorial.
+Keep the ESP32 board package, board selection, and USB port settings from the standalone tutorial.
 
-## Part 2: Create a Blynk template
+## Part 2: Sign in and turn on Developer Mode
 
-1. Sign in to [Blynk.Console](https://blynk.cloud/).
-2. Open **Developer Zone > Templates**.
-3. Create a new template with these settings:
-   - Name: `Student Irrigation Box`
-   - Hardware: `ESP32`
-   - Connection type: `WiFi`
-4. Open the template's **Datastreams** tab.
-5. Add the four Virtual Pin datastreams in the following table.
+### In the web console
+
+1. Open [Blynk.Console](https://blynk.cloud/) in the browser.
+2. If a sign-in page appears, enter `itetu.training@gmail.com` in the email field.
+3. Ask the instructor to enter the password. Do not ask the browser to display or save it on a public computer unless the instructor approves.
+4. After sign-in, look at the top-right corner for the profile or account icon.
+5. Click the profile icon.
+6. Turn **Developer Mode** on if it is off.
+7. Look at the left navigation. If it is hidden, click the **menu icon (☰)** to expand it.
+8. Click **Developer Zone**.
+9. Click **My Templates** or **Templates**. Blynk has used both labels in recent layouts.
+
+You should now see the class templates. Stop if the shared-account email or organization is wrong.
+
+### In the mobile app
+
+1. Open the **Blynk IoT** app.
+2. Sign in with `itetu.training@gmail.com` if the instructor has not already done so.
+3. Tap the **profile/person icon**.
+4. Find **Developer Mode** and turn its switch on.
+5. Return to the main screen.
+6. Tap **Developer Mode** or the **wrench/tool icon**, depending on the app version.
+
+Developer Mode is where a template's mobile layout is edited. The normal Devices view is where the live `TU-Box-Gx` device is operated.
+
+## Part 3: Open or create the assigned template
+
+### Normal learner path: open the existing template
+
+1. In the web console, click **Developer Zone > My Templates**.
+2. Read your station record.
+3. Find the exact assigned name: `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4`.
+4. Click the template name once.
+5. Confirm the name at the top of the page before editing.
+
+Do not click **+ New Template** when your assigned template already exists. A name such as `Irrigation-G1 copy` is not an acceptable replacement.
+
+### If the instructor asks your group to create a missing template
+
+1. Click **Developer Zone > My Templates**.
+2. Click **+ New Template**.
+3. In **Name**, type your assigned template name exactly.
+4. In **Hardware**, choose **ESP32**.
+5. In **Connection Type** or **Connectivity**, choose **WiFi**.
+6. Click **Done** or **Create**.
+7. Click **Save** if a Save button appears at the top-right.
+8. Return to **My Templates** and verify that only one template has the assigned name.
+
+If a template is missing and you were not instructed to create it, stop and tell the instructor.
+
+## Part 4: Add the four datastreams
+
+Repeat the following click path once for each row in the table.
+
+1. Open your assigned template.
+2. Click the **Datastreams** tab.
+3. Click **Edit** if the page is read-only.
+4. Click **+ New Datastream**.
+5. Click **Virtual Pin**.
+6. Enter the row's **Name**.
+7. Open the **Pin** dropdown and choose the listed Virtual Pin.
+8. Open **Data Type** and choose the listed type.
+9. For integer values, enter the minimum and maximum.
+10. Enter the unit only for V0.
+11. Click **Create**.
+12. Repeat for the next row.
+13. When all four rows are visible, click **Save** or **Save and Apply** if shown.
 
 | Datastream name | Pin | Data type | Minimum | Maximum | Unit |
 | --- | ---: | --- | ---: | ---: | --- |
-| Soil Moisture | V0 | Integer | 0 | 100 | % |
-| Water 5 Seconds | V1 | Integer | 0 | 1 | none |
-| Pump State | V2 | Integer | 0 | 1 | none |
-| Device Status | V3 | String | N/A | N/A | none |
+| Soil Moisture | V0 | Integer | 0 | 100 | `%` |
+| Water 5 Seconds | V1 | Integer | 0 | 1 | leave blank |
+| Pump State | V2 | Integer | 0 | 1 | leave blank |
+| Device Status | V3 | String | not shown | not shown | leave blank |
 
-A datastream describes the value travelling between one device and Blynk. Blynk's current setup guide shows how to [create Virtual Pin datastreams](https://docs.blynk.io/en/getting-started/template-quick-setup/set-up-datastreams).
+Checkpoint: the template must show exactly four datastreams using V0, V1, V2, and V3 once each. If a pin is duplicated, edit the incorrect row before continuing. Blynk's official [datastream setup guide](https://docs.blynk.io/en/getting-started/template-quick-setup/set-up-datastreams) includes the current console workflow.
 
-## Part 3: Create a device and copy its credentials
+## Part 5: Create or open the assigned device
 
-1. In Blynk.Console, create a device **from the template** named `Student Irrigation Box`.
-2. Open the new device.
-3. Open **Device Info** or **Developer Tools**, depending on the console layout.
-4. Copy these three values into a temporary private note:
-   - `BLYNK_TEMPLATE_ID`
-   - `BLYNK_TEMPLATE_NAME`
-   - `BLYNK_AUTH_TOKEN`
+First check whether the device already exists:
 
-Each physical ESP32 should have its own device and Auth Token. Do not give several boards the same token. Blynk documents this prototype workflow under [Manual Device Activation](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation).
+1. Click **Search** or **Devices** in the left navigation.
+2. Click **My Devices** if that submenu appears.
+3. Find your assigned device name, such as `TU-Box-G2`.
+4. If it exists, click it and skip to **Copy the device credentials** below.
 
-## Part 4: Build the phone dashboard
+Create it only if it is missing and the instructor tells you to:
 
-Install and sign in to the Blynk mobile app. Enable Developer Mode if the app asks for it, then open the `Student Irrigation Box` template and create its mobile dashboard.
+1. Click **+ New Device**.
+2. If Blynk asks for a creation method, click **From Template**.
+3. Open the **Template** dropdown.
+4. Choose your exact assigned template, such as `Irrigation-G2`.
+5. In **Device Name**, type the matching assigned device name, such as `TU-Box-G2`.
+6. Click **Create**.
+7. Confirm that the template and device group numbers match.
 
-Add these widgets:
+### Copy the device credentials
 
-1. A **Gauge** or **Labeled Value** connected to `Soil Moisture (V0)`.
-2. A **Button** or **Switch** connected to `Water 5 Seconds (V1)`. Set its off/on values to 0 and 1. If a push-button mode is available, use it; otherwise the ESP32 code resets the value to 0 after accepting a request.
-3. A **Labeled Value** or indicator connected to `Pump State (V2)`.
-4. A **Labeled Value** connected to `Device Status (V3)`.
+1. Open your `TU-Box-Gx` device.
+2. Click **Device Info** or **Developer Tools**. The label varies by console version.
+3. Find the firmware configuration snippet.
+4. Use the **copy icon** if available and copy these three definitions into a temporary private note:
 
-The mobile layout and web layout are separate in Blynk. This exercise uses the mobile layout. See Blynk's [mobile dashboard guide](https://docs.blynk.io/en/getting-started/template-quick-setup/set-up-mobile-app-dashboard) if the widget editor is unfamiliar.
+```cpp
+#define BLYNK_TEMPLATE_ID   "..."
+#define BLYNK_TEMPLATE_NAME "Irrigation-Gx"
+#define BLYNK_AUTH_TOKEN    "..."
+```
 
-Suggested layout:
+5. Verify that `BLYNK_TEMPLATE_NAME` exactly matches your station record.
+6. Keep the Auth Token private. Do not commit it to Git or place it in a screenshot.
+
+Each physical box needs its own Blynk device and Auth Token. Never copy the token from another `TU-Box-Gx` device. See Blynk's [manual activation guide](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation).
+
+## Part 6: Build the mobile dashboard
+
+The Blynk mobile dashboard and web dashboard are separate layouts. Completing one does not automatically build the other. Build the mobile layout first.
+
+![Illustrated click guide for adding and connecting the four mobile widgets](assets/images/blynk-dashboard-click-guide.png)
+
+The image is a learning illustration, not a literal screenshot. If an icon has moved, follow the written label and click path below.
+
+### Open the correct mobile template
+
+1. Open **Blynk IoT** and confirm that the shared account is signed in.
+2. Tap the **profile/person icon**.
+3. Turn **Developer Mode** on.
+4. Return to the main screen.
+5. Tap **Developer Mode** or the **wrench/tool icon**.
+6. Find your exact template name.
+7. Tap only your assigned `Irrigation-Gx` template.
+8. Confirm the template name at the top before adding a widget.
+
+### Add the Soil Moisture gauge
+
+1. Tap **+** at the top-right. If there is no plus button, tap an empty area of the canvas.
+2. In the widget list, tap **Gauge**.
+3. Tap the new gauge to open its settings.
+4. Tap **Datastream**.
+5. Tap **Soil Moisture (V0)**.
+6. Set the widget title to `Soil Moisture` if a title field is shown.
+7. Confirm that the displayed range is 0 to 100 and the unit is `%`.
+8. Tap **Back**, **Done**, or the **X** to return to the canvas; the exact close control depends on the phone.
+
+### Add the Water 5 Seconds control
+
+1. Tap **+**.
+2. Tap **Switch**. If the app provides a Button widget with a **Push** mode, that is also acceptable.
+3. Tap the new control to open its settings.
+4. Tap **Datastream**.
+5. Tap **Water 5 Seconds (V1)**.
+6. Set the title to `Water 5 Seconds`.
+7. Confirm that off is 0 and on is 1.
+8. If a **Mode** setting appears, choose **Push**. If it does not, keep Switch mode; the ESP32 resets V1 to 0 after accepting a request.
+9. Return to the canvas.
+
+Do not test this control yet. The ESP32 code and no-load safety test must be ready first.
+
+### Add the Pump State value
+
+1. Tap **+**.
+2. Tap **Labeled Value**.
+3. Tap the new widget.
+4. Tap **Datastream**.
+5. Tap **Pump State (V2)**.
+6. Set the title to `Pump State`.
+7. Return to the canvas.
+
+### Add the Device Status value
+
+1. Tap **+**.
+2. Tap **Labeled Value**.
+3. Tap the new widget.
+4. Tap **Datastream**.
+5. Tap **Device Status (V3)**.
+6. Set the title to `Device Status`.
+7. Return to the canvas.
+
+### Arrange and verify the layout
+
+1. Long-press a widget and drag it to move it.
+2. Select a widget and drag its green handles to resize it if handles appear.
+3. Place the gauge at the top, the watering control below it, and the two status values at the bottom.
+4. Open each widget once more and read its selected datastream aloud.
+5. Leave Developer Mode.
+6. Open **Devices**, then tap your assigned `TU-Box-Gx` device to reach the live dashboard.
+
+Expected live layout:
 
 ```text
 +---------------------------+
@@ -124,14 +321,29 @@ Suggested layout:
 +---------------------------+
 ```
 
-## Part 5: Upload the beginner sketch
+## Optional: build the web dashboard too
 
-Create a new Arduino sketch. Copy all of the code below, then replace the credential and Wi-Fi placeholder values near the top. If the template has a different name, replace `Student Irrigation Box` as well.
+Do this only after the mobile layout works.
+
+1. In Blynk.Console, click **Developer Zone > My Templates**.
+2. Open your assigned `Irrigation-Gx` template.
+3. Click the **Web Dashboard** tab.
+4. Click **Edit** at the top-right.
+5. Drag a **Gauge** from the Widget Box to the dashboard.
+6. Click its **gear/settings icon**, select `Soil Moisture (V0)`, and save the widget settings.
+7. Add a **Switch** connected to `Water 5 Seconds (V1)`.
+8. Add value/label widgets for `Pump State (V2)` and `Device Status (V3)`.
+9. Click **Save**.
+10. To see live values, click **Search > My Devices**, open your `TU-Box-Gx` device, and click its **Dashboard** tab.
+
+## Part 7: Upload the beginner sketch
+
+Create a new Arduino sketch. Copy all of the code below. Then replace the three Blynk definitions with the exact snippet from your own `TU-Box-Gx` device and replace the Wi-Fi placeholders. The template name in code must match `Irrigation-G1`, `Irrigation-G2`, `Irrigation-G3`, or `Irrigation-G4` exactly.
 
 ```cpp
 #define BLYNK_PRINT Serial
 #define BLYNK_TEMPLATE_ID   "YOUR_TEMPLATE_ID"
-#define BLYNK_TEMPLATE_NAME "Student Irrigation Box"
+#define BLYNK_TEMPLATE_NAME "YOUR_ASSIGNED_TEMPLATE_NAME"
 #define BLYNK_AUTH_TOKEN    "YOUR_DEVICE_AUTH_TOKEN"
 
 #include <WiFi.h>
@@ -228,7 +440,9 @@ void loop() {
 
 The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not put an unrestricted `Blynk.virtualWrite()` in `loop()`: Blynk warns that sending on every loop can flood the cloud connection. See [Send Data From Hardware to Blynk](https://docs.blynk.io/en/getting-started/how-to-display-any-sensor-data-in-blynk-app).
 
-## Part 6: Test without a pump
+Do not upload while `YOUR_TEMPLATE_ID`, `YOUR_ASSIGNED_TEMPLATE_NAME`, `YOUR_DEVICE_AUTH_TOKEN`, `YOUR_WIFI_NAME`, or `YOUR_WIFI_PASSWORD` remains in the sketch. For Group 3, for example, the template-name line must contain `"Irrigation-G3"`.
+
+## Part 8: Test without a pump
 
 1. Disconnect the pump or valve from the relay contacts.
 2. Upload the sketch.
@@ -243,7 +457,7 @@ The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not 
 
 Stop immediately if the relay turns on during ESP32 reset, remains on longer than five seconds, or behaves opposite to the comments in the code. The relay board may not match the expected active-low design.
 
-## Part 7: Supervised water test
+## Part 9: Supervised water test
 
 Only continue after the no-load test passes.
 
