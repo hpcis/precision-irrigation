@@ -10,7 +10,7 @@
     </filter>
   </defs>
   <rect width="1600" height="700" rx="28" fill="#f8fafc"/>
-  <text x="800" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0f172a">SMALL WORKSHOP BUILD: NO EDGENT</text>
+  <text x="800" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0f172a">BLYNK IRRIGATION WORKSHOP FLOW</text>
   <text x="800" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="#475569">The location label shows exactly where each action happens.</text>
 
   <g font-family="Arial, sans-serif" filter="url(#shadow)">

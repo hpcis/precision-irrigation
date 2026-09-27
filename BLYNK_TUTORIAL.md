@@ -40,11 +40,11 @@ The word **edge** means “at the physical edge of the network, beside the real 
 
 The edge device must remain responsible for safety. The phone may request watering, but the ESP32 decides whether to operate GPIO27 and stops the relay locally after five seconds. A lost internet connection must never be the only way to stop a pump.
 
-### Why this workshop uses manual activation
+### How the irrigation box connects to Blynk
 
-Blynk offers a larger system called **Blynk.Edgent** for provisioning Wi-Fi from a phone, resetting credentials, status indication, and over-the-air updates. Those features are useful for products, but they consume much more ESP32 flash and add several concepts that are not needed in this short demonstration.
+In this workshop, learners create one device on the Blynk web dashboard and copy its **Template ID**, **Template Name**, and **Auth Token**. These three Blynk values are placed in the Arduino sketch together with the classroom Wi-Fi name and password. Blynk calls this process **manual device activation**.
 
-This workshop uses Blynk's simpler **manual device activation** instead. Learners create one device on the web dashboard, copy its generated **Auth Token**, and place that token together with the classroom Wi-Fi name and password in a one-file Arduino sketch. Blynk documents this workflow for prototypes and devices that do not require end-user activation.
+After the sketch is uploaded, the ESP32 uses those five values to join Wi-Fi and connect the physical irrigation box to its matching Blynk device. The connection happens automatically each time the box starts.
 
 The workshop Wi-Fi credentials are intentionally visible in the sketch. Use a temporary classroom network whose password may be shared, and change that password after the event if the network will be reused. The shared Blynk account password is still private because learners do not need it inside the firmware.
 
@@ -595,14 +595,14 @@ Do this only after the mobile layout works.
 
 ## Part 7: Build and upload the small workshop sketch
 
-This workshop uses one `.ino` file. It does not use Blynk.Edgent or its supporting tabs. The five values learners copy are grouped together at the top of the program.
+The workshop program is one `.ino` file. The five values learners copy are grouped together at the top of the program.
 
 ### A. Make a one-file sketch
 
 1. **ESP IRRIGATION BOX (Arduino IDE) —** Connect the box to the computer with a USB data cable, then open Arduino IDE.
 2. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > New Sketch**.
 3. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > Save As** and use a clear name such as `Irrigation_Blynk_G1`.
-4. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that there is one main `.ino` tab. Edgent tabs such as `BlynkEdgent.h` and `Settings.h` are neither needed nor wanted.
+4. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that the new sketch has one main `.ino` tab.
 5. **ESP IRRIGATION BOX (Arduino IDE) —** Replace the complete contents of the `.ino` tab with the code below.
 
 ```cpp
@@ -763,21 +763,19 @@ The variable inside `BLYNK_WRITE(V1)` is named `wateringRequest` intentionally. 
 2. **ESP IRRIGATION BOX (Arduino IDE) —** Select **Tools > Board > ESP32 Arduino > ESP32 Dev Module** for the ESP-32U workshop controller.
 3. **ESP IRRIGATION BOX (Arduino IDE) —** Open **Tools > Port** and select the port that appears for the connected box. Choose `COM3` only if Arduino IDE currently identifies the box as COM3.
 4. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Verify**. Read the result before uploading.
-5. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that verification says the sketch uses comfortably less than the maximum application space. The verified workshop build uses `747,349 bytes (57%)` of the `1,310,720`-byte application partition. A result near `1,283,429 bytes (97%)` means the old Edgent project or extra tabs are still being compiled.
+5. **ESP IRRIGATION BOX (Arduino IDE) —** Read the storage result. With the versions listed in this tutorial, the expected result is about `747,349 bytes (57%)` of the `1,310,720`-byte application partition. If the result is close to 100%, do not upload; reopen the learner sketch linked below and confirm that it has only one `.ino` tab.
 6. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Upload** only after verification succeeds.
 7. **ESP IRRIGATION BOX (Arduino IDE) —** Open **Tools > Serial Monitor** and set it to **115200 baud**.
 
-The small client is based on Blynk's official [ESP32 Wi-Fi example](https://github.com/Blynk-Technologies/blynk-library/blob/master/examples/Boards_WiFi/ESP32_WiFi/ESP32_WiFi.ino) and [Manual Device Activation](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation) example. It avoids Edgent's Wi-Fi provisioning, OTA-update, status, and SSL support so that the workshop sketch has much more application-partition headroom.
+The connection code follows Blynk's official [ESP32 Wi-Fi example](https://github.com/Blynk-Technologies/blynk-library/blob/master/examples/Boards_WiFi/ESP32_WiFi/ESP32_WiFi.ino) and [Manual Device Activation](https://docs.blynk.io/en/getting-started/activating-devices/manual-device-activation) instructions.
 
-The complete learner sketch is also available as [`examples/irrigation_blynk/irrigation_blynk.ino`](examples/irrigation_blynk/irrigation_blynk.ino). The code shown above and that file are the same. The compile check used Blynk 1.3.5, Espressif ESP32 board package 2.0.17, and **ESP32 Dev Module**; changing board-core or library versions can change the byte count slightly.
-
-This compact example uses Blynk's non-SSL ESP32 client. Use only the isolated demonstration network and demonstration device token; delete or rotate the device token and change the temporary Wi-Fi password after the event if they will not be reused.
+The complete learner sketch is also available as [`examples/irrigation_blynk/irrigation_blynk.ino`](examples/irrigation_blynk/irrigation_blynk.ino). The code shown above and that file are the same. Use Blynk 1.3.5, Espressif ESP32 board package 2.0.17, and **ESP32 Dev Module** to obtain the expected result; changing versions can change the byte count slightly.
 
 **Checkpoint 7 — ESP IRRIGATION BOX:** Arduino IDE reports a successful upload, the relay remains off, and Serial Monitor begins a Wi-Fi/Blynk connection attempt. Do not continue if the relay energizes during startup.
 
 ## Part 8: Connect the edge device to Wi-Fi and Blynk.Cloud
 
-The **edge device** is the physical ESP32 irrigation box beside the sensor and relay. In this workshop, it connects automatically using the five values already pasted into the sketch. There is no phone provisioning step.
+The **edge device** is the physical ESP32 irrigation box beside the sensor and relay. It connects automatically using the five values already pasted into the sketch.
 
 | Moment | Where to observe it | What happens |
 | --- | --- | --- |
@@ -885,7 +883,7 @@ Answer these questions:
 | Symptom | Check |
 | --- | --- |
 | Sketch does not compile | Use Blynk 1.3.5, select **ESP32 Dev Module**, and confirm the sketch includes `BlynkSimpleEsp32.h` and `Ticker.h` |
-| Sketch still uses about 97% of application space | Start a new one-file sketch and paste only the Part 7 code; an old Edgent project or its extra tabs are still being compiled |
+| Sketch is unexpectedly close to the maximum application space | Close it, open the exact learner sketch linked in Part 7, confirm that it has one `.ino` tab, select **ESP32 Dev Module**, and verify again |
 | Upload reports COM3 or another serial-port error | Reconnect a known USB data cable, close other Serial Monitors, and select the port that appears under **Tools > Port**; this is not a Blynk error |
 | ESP32 cannot join the network | Choose a 2.4 GHz network, re-enter its password, and avoid captive-portal or browser-sign-in networks |
 | Device stays Offline | Read Serial Monitor, verify internet access, then compare the sketch's Auth Token with the exact device's **Developer Tools** value; do not create a duplicate |
