@@ -103,16 +103,39 @@ See Blynk's [Virtual Pins documentation](https://docs.blynk.io/en/blynk-library-
 
 Follow the stages in order. Each part ends with a **checkpoint**: an observable result that proves the learner is ready to continue. If the checkpoint is not true, stay in that part and use its help section.
 
+### Read the location label before every action
+
+Every numbered action in Parts 1–10 begins with a location label:
+
+| Location label | Perform the action here |
+| --- | --- |
+| **WEB DASHBOARD** | In Blynk.Console at `blynk.cloud`, using a desktop or laptop browser |
+| **MOBILE DEVICE** | In the Blynk IoT app or the phone's Wi-Fi settings |
+| **ESP IRRIGATION BOX** | On the physical box or in Arduino IDE/Serial Monitor on the computer connected to it by USB |
+
+If an action shows two labels, observe or operate both places before moving to the next numbered action.
+
+| Part | Main location | What changes there |
+| ---: | --- | --- |
+| 1 | **ESP IRRIGATION BOX** | Install the library in Arduino IDE |
+| 2 | **WEB DASHBOARD**, then **MOBILE DEVICE** | Sign in and reveal the developer tools |
+| 3–5 | **WEB DASHBOARD** | Create the template, datastreams, and obtain its ID |
+| 6 | **MOBILE DEVICE** | Build the phone dashboard |
+| 7 | **ESP IRRIGATION BOX** | Edit and upload the firmware through Arduino IDE |
+| 8 | **MOBILE DEVICE + ESP IRRIGATION BOX** | Send Wi-Fi settings and create the device |
+| 9 | **MOBILE DEVICE + ESP IRRIGATION BOX** | Test the dashboard request and physical relay |
+| 10 | **MOBILE DEVICE + ESP IRRIGATION BOX** | Request and observe the supervised water test |
+
 ### If you get lost, identify the screen you can see
 
-| What is visible now | What it means | Continue at |
-| --- | --- | --- |
-| Empty **Devices** page | Signed in, but build tools are not visible yet | Part 2 |
-| **Developer Zone** and **+ New Template** | Developer Mode is on | Part 3 |
-| Template name with **Info** and **Datastreams** tabs | A template workspace is open | Part 4 or Part 5 |
-| Phone canvas with a **+** button | Mobile template editor is open | Part 6 |
-| Arduino Serial Monitor waiting for configuration | Edgent firmware is uploaded | Part 8 |
-| A named device tile showing **Online** | Provisioning is complete | Part 9 |
+| Location | What is visible now | What it means | Continue at |
+| --- | --- | --- | --- |
+| **WEB DASHBOARD** | Empty **Devices** page | Signed in, but build tools are not visible yet | Part 2 |
+| **WEB DASHBOARD** | **Developer Zone** and **+ New Template** | Developer Mode is on | Part 3 |
+| **WEB DASHBOARD** | Template name with **Info** and **Datastreams** tabs | A template workspace is open | Part 4 or Part 5 |
+| **MOBILE DEVICE** | Phone canvas with a **+** button | Mobile template editor is open | Part 6 |
+| **ESP IRRIGATION BOX** | Arduino Serial Monitor waiting for configuration | Edgent firmware is uploaded | Part 8 |
+| **MOBILE DEVICE** | A named device tile showing **Online** | Provisioning is complete | Part 9 |
 
 Do not keep clicking when the visible screen belongs to a later part. Return to the last completed checkpoint first.
 
@@ -149,12 +172,12 @@ Our device name: _____________________
 
 Shared-account rules:
 
-1. Work only inside the template and device named in the station record.
-2. Never rename or delete another group's work.
-3. Never operate another group's watering control.
-4. Never provision an ESP32 from another group's template.
-5. Ask the instructor before signing out or changing account settings.
-6. If the displayed name does not match the station record, stop and return to the list.
+- Work only inside the template and device named in the station record.
+- Never rename or delete another group's work.
+- Never operate another group's watering control.
+- Never provision an ESP32 from another group's template.
+- Ask the instructor before signing out or changing account settings.
+- If the displayed name does not match the station record, stop and return to the list.
 
 ### Suggested roles inside each group
 
@@ -195,17 +218,17 @@ Do not publish a Wi-Fi password, account password, or Blynk Auth Token. Blynk.Ed
 
 ## Part 1: Install the Blynk library
 
-1. Open Arduino IDE.
-2. Click **Tools > Manage Libraries**.
-3. Click the search field and type `Blynk`.
-4. Find the library published by Volodymyr Shymanskyy.
-5. Select the latest stable version shown by Library Manager.
-6. Click **Install**.
-7. Wait until Arduino IDE reports that installation has finished.
-8. Click **File > Examples > Blynk > Blynk.Edgent**.
-9. Confirm that **Edgent_ESP32** appears.
+1. **ESP IRRIGATION BOX (Arduino IDE) —** Open Arduino IDE on the computer that will be connected to the box.
+2. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Tools > Manage Libraries**.
+3. **ESP IRRIGATION BOX (Arduino IDE) —** Click the search field and type `Blynk`.
+4. **ESP IRRIGATION BOX (Arduino IDE) —** Find the library published by Volodymyr Shymanskyy.
+5. **ESP IRRIGATION BOX (Arduino IDE) —** Select the latest stable version shown by Library Manager.
+6. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Install**.
+7. **ESP IRRIGATION BOX (Arduino IDE) —** Wait until Arduino IDE reports that installation has finished.
+8. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > Examples > Blynk > Blynk.Edgent**.
+9. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that **Edgent_ESP32** appears.
 
-**Checkpoint 1:** `Edgent_ESP32` is visible in the Examples menu. If it is missing, close and reopen Arduino IDE, then check Library Manager again.
+**Checkpoint 1 — ESP IRRIGATION BOX (Arduino IDE):** `Edgent_ESP32` is visible in the Examples menu. If it is missing, close and reopen Arduino IDE, then check Library Manager again.
 
 Keep the ESP32 board package, board selection, and USB port settings from the standalone tutorial.
 
@@ -219,43 +242,43 @@ The image is a route map, not a literal screenshot. Button position can change; 
 
 ### A. Reach the empty Devices page
 
-1. Open [Blynk.Console](https://blynk.cloud/) in a desktop browser.
-2. Enter `itetu.training@gmail.com`.
-3. Ask the instructor to enter the account password privately.
-4. If Blynk starts a generic Quickstart walkthrough, leave it using the visible **X**, **Back**, or **Skip** control. Do not create a Quickstart device for this class.
-5. Stop on the page headed **Devices**. Because this is a new account, **No devices yet** is the expected result.
+1. **WEB DASHBOARD —** Open [Blynk.Console](https://blynk.cloud/) in a desktop browser.
+2. **WEB DASHBOARD —** Enter `itetu.training@gmail.com`.
+3. **WEB DASHBOARD —** Ask the instructor to enter the account password privately.
+4. **WEB DASHBOARD —** If Blynk starts a generic Quickstart walkthrough, leave it using the visible **X**, **Back**, or **Skip** control. Do not create a Quickstart device for this class.
+5. **WEB DASHBOARD —** Stop on the page headed **Devices**. Because this is a new account, **No devices yet** is the expected result.
 
 If the walkthrough has no leave control, complete only the account/profile questions needed to reach **Devices**. Do not download Quickstart code, create a Quickstart device, or upload anything to the ESP32.
 
 ### B. Turn on the build tools
 
-1. Find and click the **profile/person icon** at the top-right.
-2. Find the switch labeled **Developer Mode** and turn it on.
-3. Close the profile panel or return to the main page.
-4. If the left navigation is collapsed, expand it with the three-line menu button.
-5. Look for **Developer Zone** in the left navigation.
-6. Click **Developer Zone**. On a new account, the template area should be empty and should offer **+ New Template**.
+1. **WEB DASHBOARD —** Find and click the **profile/person icon** at the top-right.
+2. **WEB DASHBOARD —** Find the switch labeled **Developer Mode** and turn it on.
+3. **WEB DASHBOARD —** Close the profile panel or return to the main page.
+4. **WEB DASHBOARD —** If the left navigation is collapsed, expand it with the three-line menu button.
+5. **WEB DASHBOARD —** Look for **Developer Zone** in the left navigation.
+6. **WEB DASHBOARD —** Click **Developer Zone**. On a new account, the template area should be empty and should offer **+ New Template**.
 
-**Checkpoint 2:** the words **Developer Zone** and the button **+ New Template** are visible. Do not continue until both are visible.
+**Checkpoint 2 — WEB DASHBOARD:** the words **Developer Zone** and the button **+ New Template** are visible. Do not continue until both are visible.
 
 If **Developer Zone** does not appear:
 
-1. Confirm that the top-right account is `itetu.training@gmail.com`.
-2. Open the profile menu again and confirm that **Developer Mode** still says **ON**.
-3. Refresh the browser page once.
-4. Expand the left navigation again.
-5. If the switch cannot be enabled, stop and tell the instructor; do not continue by guessing another menu.
+1. **WEB DASHBOARD —** Confirm that the top-right account is `itetu.training@gmail.com`.
+2. **WEB DASHBOARD —** Open the profile menu again and confirm that **Developer Mode** still says **ON**.
+3. **WEB DASHBOARD —** Refresh the browser page once.
+4. **WEB DASHBOARD —** Expand the left navigation again.
+5. **WEB DASHBOARD —** If the switch cannot be enabled, stop and tell the instructor; do not continue by guessing another menu.
 
 ### C. Prepare the mobile app
 
 The web console creates templates and datastreams. The mobile app builds the phone layout and later provisions the ESP32.
 
-1. Open the **Blynk IoT** app.
-2. Sign in to the same account, `itetu.training@gmail.com`.
-3. Tap the **profile/person icon**.
-4. Turn **Developer Mode** on.
-5. Return to the main screen.
-6. Do not look for a live device tile yet.
+1. **MOBILE DEVICE —** Open the **Blynk IoT** app.
+2. **MOBILE DEVICE —** Sign in to the same account, `itetu.training@gmail.com`.
+3. **MOBILE DEVICE —** Tap the **profile/person icon**.
+4. **MOBILE DEVICE —** Turn **Developer Mode** on.
+5. **MOBILE DEVICE —** Return to the main screen.
+6. **MOBILE DEVICE —** Do not look for a live device tile yet.
 
 That empty device view is correct: Part 3 creates a template, while Part 8 creates the device.
 
@@ -269,37 +292,37 @@ The image uses Group 1 as the example. Replace `G1` with the assigned group numb
 
 ### A. Check before creating
 
-1. In Blynk.Console, click **Developer Zone**.
-2. Look through the template tiles.
-3. If the exact assigned name already exists, click that tile and go to **Checkpoint 3**. Do not create a copy.
-4. If the exact assigned name does not exist, continue below.
+1. **WEB DASHBOARD —** In Blynk.Console, click **Developer Zone**.
+2. **WEB DASHBOARD —** Look through the template tiles.
+3. **WEB DASHBOARD —** If the exact assigned name already exists, click that tile and go to **Checkpoint 3**. Do not create a copy.
+4. **WEB DASHBOARD —** If the exact assigned name does not exist, continue below.
 
 ### B. Create the template
 
-1. Click **+ New Template**.
-2. A template form or dialog opens.
-3. Click the **Name** field.
-4. Type the assigned template name exactly:
+1. **WEB DASHBOARD —** Click **+ New Template**.
+2. **WEB DASHBOARD —** Confirm that a template form or dialog opens.
+3. **WEB DASHBOARD —** Click the **Name** field.
+4. **WEB DASHBOARD —** Type the assigned template name exactly:
 
    - Group 1: `Irrigation G1`
    - Group 2: `Irrigation G2`
    - Group 3: `Irrigation G3`
    - Group 4: `Irrigation G4`
 
-5. Confirm that the name has a space before `G` and contains no dash.
-6. Open the **Hardware** dropdown and choose **ESP32**.
-7. Open **Connection Type** or **Connectivity** and choose **WiFi**.
-8. Click **Done** or **Create**.
-9. Blynk should open the new template workspace. Look for the template name near the top and tabs such as **Info**, **Datastreams**, **Events**, and **Web Dashboard**.
-10. Click **Save** at the top-right if it is visible.
+5. **WEB DASHBOARD —** Confirm that the name has a space before `G` and contains no dash.
+6. **WEB DASHBOARD —** Open the **Hardware** dropdown and choose **ESP32**.
+7. **WEB DASHBOARD —** Open **Connection Type** or **Connectivity** and choose **WiFi**.
+8. **WEB DASHBOARD —** Click **Done** or **Create**.
+9. **WEB DASHBOARD —** Confirm that Blynk opens the new template workspace. Look for the template name near the top and tabs such as **Info**, **Datastreams**, **Events**, and **Web Dashboard**.
+10. **WEB DASHBOARD —** Click **Save** at the top-right if it is visible.
 
 ### C. Protect other groups' work
 
-- If `Irrigation G2` already exists and you are Group 1, leave it unchanged.
-- If a duplicate such as `Irrigation G1 copy` was accidentally created, stop and ask the instructor to remove it. Learners should not delete shared-account resources themselves.
-- Work in only one browser tab for the assigned template so that edits are not made to the wrong group.
+- **WEB DASHBOARD —** If `Irrigation G2` already exists and you are Group 1, leave it unchanged.
+- **WEB DASHBOARD —** If a duplicate such as `Irrigation G1 copy` was accidentally created, stop and ask the instructor to remove it. Learners should not delete shared-account resources themselves.
+- **WEB DASHBOARD —** Work in only one browser tab for the assigned template so that edits are not made to the wrong group.
 
-**Checkpoint 3:** the exact group template name is visible at the top of an open template workspace, and its **Datastreams** tab is visible.
+**Checkpoint 3 — WEB DASHBOARD:** the exact group template name is visible at the top of an open template workspace, and its **Datastreams** tab is visible.
 
 ## Part 4: Add the four datastreams
 
@@ -307,24 +330,24 @@ A datastream tells Blynk what a value is called, what kind of value it carries, 
 
 ### A. Open the Datastreams editor
 
-1. Confirm that the correct `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4` name is visible at the top.
-2. Click the **Datastreams** tab.
-3. If the page is read-only, click **Edit** at the top-right.
-4. The list is empty in a new template. That is the correct starting point.
+1. **WEB DASHBOARD —** Confirm that the correct `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4` name is visible at the top.
+2. **WEB DASHBOARD —** Click the **Datastreams** tab.
+3. **WEB DASHBOARD —** If the page is read-only, click **Edit** at the top-right.
+4. **WEB DASHBOARD —** Confirm that the list is empty in a new template. That is the correct starting point.
 
 ### B. Create V0 together
 
-1. Click **+ New Datastream**.
-2. Choose **Virtual Pin**. Do not choose a physical-pin datastream.
-3. In **Name**, type `Soil Moisture`.
-4. In **Pin**, choose `V0`.
-5. In **Data Type**, choose **Integer**.
-6. In **Minimum**, type `0`.
-7. In **Maximum**, type `100`.
-8. In **Unit**, type `%`.
-9. Leave optional fields at their defaults unless the instructor says otherwise.
-10. Click **Create**.
-11. Confirm that a row named **Soil Moisture** now appears and shows V0.
+1. **WEB DASHBOARD —** Click **+ New Datastream**.
+2. **WEB DASHBOARD —** Choose **Virtual Pin**. Do not choose a physical-pin datastream.
+3. **WEB DASHBOARD —** In **Name**, type `Soil Moisture`.
+4. **WEB DASHBOARD —** In **Pin**, choose `V0`.
+5. **WEB DASHBOARD —** In **Data Type**, choose **Integer**.
+6. **WEB DASHBOARD —** In **Minimum**, type `0`.
+7. **WEB DASHBOARD —** In **Maximum**, type `100`.
+8. **WEB DASHBOARD —** In **Unit**, type `%`.
+9. **WEB DASHBOARD —** Leave optional fields at their defaults unless the instructor says otherwise.
+10. **WEB DASHBOARD —** Click **Create**.
+11. **WEB DASHBOARD —** Confirm that a row named **Soil Moisture** now appears and shows V0.
 
 ### C. Create V1, V2, and V3
 
@@ -336,10 +359,10 @@ Repeat **+ New Datastream > Virtual Pin** for each row below. Read across one ro
 | Pump State | V2 | Integer | 0 | 1 | leave blank |
 | Device Status | V3 | String | not shown | not shown | leave blank |
 
-1. When all four rows are visible, click **Save** or **Save and Apply** at the top-right.
-2. Wait until the save finishes before leaving the page.
+1. **WEB DASHBOARD —** When all four rows are visible, click **Save** or **Save and Apply** at the top-right.
+2. **WEB DASHBOARD —** Wait until the save finishes before leaving the page.
 
-**Checkpoint 4:** compare the saved list with this compact map:
+**Checkpoint 4 — WEB DASHBOARD:** compare the saved list with this compact map:
 
 ```text
 V0  Soil Moisture     Integer  0–100  %
@@ -356,8 +379,8 @@ There must be exactly four rows and each of V0, V1, V2, and V3 must appear once.
 
 The ESP32 firmware must tell Blynk which blueprint it belongs to. It needs two values:
 
-1. **Template Name** — the readable group name that the class chose.
-2. **Template ID** — the unique value that Blynk generated when the template was created.
+- **Template Name** — the readable group name that the class chose.
+- **Template ID** — the unique value that Blynk generated when the template was created.
 
 The Template ID is not a password. It normally begins with `TMPL`, and every group's value will be different. The Auth Token is a different value; Edgent obtains that later during provisioning.
 
@@ -369,22 +392,22 @@ The image is a screen map, not a literal screenshot. Use the labels **Developer 
 
 At the end of Part 4, the correct group template should still be open.
 
-- If the template is open, continue to section B.
-- If a list of templates is open, click the exact group tile.
-- If the **Devices** page is open, click **Developer Zone**, then click the exact group tile.
+- **WEB DASHBOARD —** If the template is open, continue to section B.
+- **WEB DASHBOARD —** If a list of templates is open, click the exact group tile.
+- **WEB DASHBOARD —** If the **Devices** page is open, click **Developer Zone**, then click the exact group tile.
 
 Do not click **Add Device**, **Search**, or **My Devices** in this part. A new account has no class device yet; Part 8 creates it.
 
 ### B. Copy the ID
 
-1. Read the template name at the top and compare it with the station record.
-2. Click the tab labeled **Info**.
-3. Find the card or field labeled **Template ID**.
-4. Confirm that its value begins with `TMPL`.
-5. Click the **copy icon** beside the value, or carefully select and copy the complete value.
-6. Paste it into the group worksheet below. A Template ID is safe to record, but do not alter any character.
-7. Find **Firmware Configuration** on the same page. Expand it if it is collapsed.
-8. Confirm that its `BLYNK_TEMPLATE_NAME` line contains the exact group name with a space and no dash.
+1. **WEB DASHBOARD —** Read the template name at the top and compare it with the station record.
+2. **WEB DASHBOARD —** Click the tab labeled **Info**.
+3. **WEB DASHBOARD —** Find the card or field labeled **Template ID**.
+4. **WEB DASHBOARD —** Confirm that its value begins with `TMPL`.
+5. **WEB DASHBOARD —** Click the **copy icon** beside the value, or carefully select and copy the complete value.
+6. **WEB DASHBOARD —** Paste it into the group worksheet below. A Template ID is safe to record, but do not alter any character.
+7. **WEB DASHBOARD —** Find **Firmware Configuration** on the same page. Expand it if it is collapsed.
+8. **WEB DASHBOARD —** Confirm that its `BLYNK_TEMPLATE_NAME` line contains the exact group name with a space and no dash.
 
 ```text
 Group number: ______________________________
@@ -403,15 +426,15 @@ Use the matching template-name line:
 
 ### C. If the Info tab is not visible
 
-1. Confirm that **Developer Mode** is still on.
-2. Confirm that a template workspace—not the Devices page—is open.
-3. Save any unfinished datastream changes.
-4. Click **Developer Zone** to return to the template list.
-5. Reopen the exact group template.
-6. Look across the template tabs for **Info**; widen the browser window if the tab row is clipped.
-7. If **Info** is still absent, stop and show the instructor the complete browser window. Do not invent a Template ID or copy an Auth Token from another screen.
+1. **WEB DASHBOARD —** Confirm that **Developer Mode** is still on.
+2. **WEB DASHBOARD —** Confirm that a template workspace—not the Devices page—is open.
+3. **WEB DASHBOARD —** Save any unfinished datastream changes.
+4. **WEB DASHBOARD —** Click **Developer Zone** to return to the template list.
+5. **WEB DASHBOARD —** Reopen the exact group template.
+6. **WEB DASHBOARD —** Look across the template tabs for **Info**; widen the browser window if the tab row is clipped.
+7. **WEB DASHBOARD —** If **Info** is still absent, stop and show the instructor the complete browser window. Do not invent a Template ID or copy an Auth Token from another screen.
 
-**Checkpoint 5:** the group worksheet contains one exact Template Name and one Template ID beginning with `TMPL`. It contains no Wi-Fi password and no Auth Token.
+**Checkpoint 5 — WEB DASHBOARD:** the group worksheet contains one exact Template Name and one Template ID beginning with `TMPL`. It contains no Wi-Fi password and no Auth Token.
 
 Blynk.Edgent will use these two template values in Part 7, then obtain the device Auth Token automatically in Part 8. See Blynk's official [Wi-Fi provisioning guide](https://docs.blynk.io/en/getting-started/activating-devices/blynk-edgent-wifi-provisioning).
 
@@ -427,72 +450,72 @@ The image is a learning illustration, not a literal screenshot. If an icon has m
 
 ### Open the correct mobile template
 
-1. Open **Blynk IoT** and confirm that the shared account is signed in.
-2. Tap the **profile/person icon**.
-3. Turn **Developer Mode** on.
-4. Return to the main screen.
-5. Tap **Developer Mode** or the **wrench/tool icon**.
-6. Find your exact template name.
-7. Tap the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
-8. Confirm the template name at the top before adding a widget.
+1. **MOBILE DEVICE —** Open **Blynk IoT** and confirm that the shared account is signed in.
+2. **MOBILE DEVICE —** Tap the **profile/person icon**.
+3. **MOBILE DEVICE —** Turn **Developer Mode** on.
+4. **MOBILE DEVICE —** Return to the main screen.
+5. **MOBILE DEVICE —** Tap **Developer Mode** or the **wrench/tool icon**.
+6. **MOBILE DEVICE —** Find your exact template name.
+7. **MOBILE DEVICE —** Tap the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
+8. **MOBILE DEVICE —** Confirm the template name at the top before adding a widget.
 
 If the template is missing, pull to refresh once, confirm that the phone uses the same shared account, and confirm that Developer Mode is on. Do not create a second template from the phone.
 
 ### Add the Soil Moisture gauge
 
-1. Tap **+** at the top-right. If there is no plus button, tap an empty area of the canvas.
-2. In the widget list, tap **Gauge**.
-3. Tap the new gauge to open its settings.
-4. Tap **Datastream**.
-5. Tap **Soil Moisture (V0)**.
-6. Set the widget title to `Soil Moisture` if a title field is shown.
-7. Confirm that the displayed range is 0 to 100 and the unit is `%`.
-8. Tap **Back**, **Done**, or the **X** to return to the canvas; the exact close control depends on the phone.
+1. **MOBILE DEVICE —** Tap **+** at the top-right. If there is no plus button, tap an empty area of the canvas.
+2. **MOBILE DEVICE —** In the widget list, tap **Gauge**.
+3. **MOBILE DEVICE —** Tap the new gauge to open its settings.
+4. **MOBILE DEVICE —** Tap **Datastream**.
+5. **MOBILE DEVICE —** Tap **Soil Moisture (V0)**.
+6. **MOBILE DEVICE —** Set the widget title to `Soil Moisture` if a title field is shown.
+7. **MOBILE DEVICE —** Confirm that the displayed range is 0 to 100 and the unit is `%`.
+8. **MOBILE DEVICE —** Tap **Back**, **Done**, or the **X** to return to the canvas; the exact close control depends on the phone.
 
 ### Add the Water 5 Seconds control
 
-1. Tap **+**.
-2. Tap **Switch**. If the app provides a Button widget with a **Push** mode, that is also acceptable.
-3. Tap the new control to open its settings.
-4. Tap **Datastream**.
-5. Tap **Water 5 Seconds (V1)**.
-6. Set the title to `Water 5 Seconds`.
-7. Confirm that off is 0 and on is 1.
-8. If a **Mode** setting appears, choose **Push**. If it does not, keep Switch mode; the ESP32 resets V1 to 0 after accepting a request.
-9. Return to the canvas.
+1. **MOBILE DEVICE —** Tap **+**.
+2. **MOBILE DEVICE —** Tap **Switch**. If the app provides a Button widget with a **Push** mode, that is also acceptable.
+3. **MOBILE DEVICE —** Tap the new control to open its settings.
+4. **MOBILE DEVICE —** Tap **Datastream**.
+5. **MOBILE DEVICE —** Tap **Water 5 Seconds (V1)**.
+6. **MOBILE DEVICE —** Set the widget title to `Water 5 Seconds`.
+7. **MOBILE DEVICE —** Confirm that off is 0 and on is 1.
+8. **MOBILE DEVICE —** If a **Mode** setting appears, choose **Push**. If it does not, keep Switch mode; the ESP32 resets V1 to 0 after accepting a request.
+9. **MOBILE DEVICE —** Return to the canvas.
 
 Do not test this control yet. The ESP32 code and no-load safety test must be ready first.
 
 ### Add the Pump State value
 
-1. Tap **+**.
-2. Tap **Labeled Value**.
-3. Tap the new widget.
-4. Tap **Datastream**.
-5. Tap **Pump State (V2)**.
-6. Set the title to `Pump State`.
-7. Return to the canvas.
+1. **MOBILE DEVICE —** Tap **+**.
+2. **MOBILE DEVICE —** Tap **Labeled Value**.
+3. **MOBILE DEVICE —** Tap the new widget.
+4. **MOBILE DEVICE —** Tap **Datastream**.
+5. **MOBILE DEVICE —** Tap **Pump State (V2)**.
+6. **MOBILE DEVICE —** Set the title to `Pump State`.
+7. **MOBILE DEVICE —** Return to the canvas.
 
 ### Add the Device Status value
 
-1. Tap **+**.
-2. Tap **Labeled Value**.
-3. Tap the new widget.
-4. Tap **Datastream**.
-5. Tap **Device Status (V3)**.
-6. Set the title to `Device Status`.
-7. Return to the canvas.
+1. **MOBILE DEVICE —** Tap **+**.
+2. **MOBILE DEVICE —** Tap **Labeled Value**.
+3. **MOBILE DEVICE —** Tap the new widget.
+4. **MOBILE DEVICE —** Tap **Datastream**.
+5. **MOBILE DEVICE —** Tap **Device Status (V3)**.
+6. **MOBILE DEVICE —** Set the title to `Device Status`.
+7. **MOBILE DEVICE —** Return to the canvas.
 
 ### Arrange and verify the layout
 
-1. Long-press a widget and drag it to move it.
-2. Select a widget and drag its green handles to resize it if handles appear.
-3. Place the gauge at the top, the watering control below it, and the two status values at the bottom.
-4. Open each widget once more and read its selected datastream aloud.
-5. Leave Developer Mode.
-6. Do not look for the live device yet. Blynk.Edgent creates it during Wi-Fi provisioning in Part 8.
+1. **MOBILE DEVICE —** Long-press a widget and drag it to move it.
+2. **MOBILE DEVICE —** Select a widget and drag its green handles to resize it if handles appear.
+3. **MOBILE DEVICE —** Place the gauge at the top, the watering control below it, and the two status values at the bottom.
+4. **MOBILE DEVICE —** Open each widget once more and read its selected datastream aloud.
+5. **MOBILE DEVICE —** Leave Developer Mode.
+6. **MOBILE DEVICE —** Do not look for the live device yet. Blynk.Edgent creates it during Wi-Fi provisioning in Part 8.
 
-**Checkpoint 6:** open each widget's settings and verify this one-to-one map before leaving the editor:
+**Checkpoint 6 — MOBILE DEVICE:** open each widget's settings and verify this one-to-one map before leaving the editor:
 
 | Widget | Must use datastream |
 | --- | --- |
@@ -518,16 +541,16 @@ Expected live layout:
 
 Do this only after the mobile layout works.
 
-1. In Blynk.Console, click **Developer Zone**; its template list opens.
-2. Open the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
-3. Click the **Web Dashboard** tab.
-4. Click **Edit** at the top-right.
-5. Drag a **Gauge** from the Widget Box to the dashboard.
-6. Click its **gear/settings icon**, select `Soil Moisture (V0)`, and save the widget settings.
-7. Add a **Switch** connected to `Water 5 Seconds (V1)`.
-8. Add value/label widgets for `Pump State (V2)` and `Device Status (V3)`.
-9. Click **Save**.
-10. After Part 8 creates the device, click **Devices** in the left navigation, open the matching `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` tile, and open its **Dashboard** tab.
+1. **WEB DASHBOARD —** In Blynk.Console, click **Developer Zone**; its template list opens.
+2. **WEB DASHBOARD —** Open the exact template for your group: `Irrigation G1`, `Irrigation G2`, `Irrigation G3`, or `Irrigation G4`.
+3. **WEB DASHBOARD —** Click the **Web Dashboard** tab.
+4. **WEB DASHBOARD —** Click **Edit** at the top-right.
+5. **WEB DASHBOARD —** Drag a **Gauge** from the Widget Box to the dashboard.
+6. **WEB DASHBOARD —** Click its **gear/settings icon**, select `Soil Moisture (V0)`, and save the widget settings.
+7. **WEB DASHBOARD —** Add a **Switch** connected to `Water 5 Seconds (V1)`.
+8. **WEB DASHBOARD —** Add value/label widgets for `Pump State (V2)` and `Device Status (V3)`.
+9. **WEB DASHBOARD —** Click **Save**.
+10. **WEB DASHBOARD —** After Part 8 creates the device, click **Devices** in the left navigation, open the matching `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` tile, and open its **Dashboard** tab.
 
 ## Part 7: Build and upload the Blynk.Edgent sketch
 
@@ -535,14 +558,14 @@ Blynk.Edgent uses several supporting tabs. Do not start with an empty one-file s
 
 The main `.ino` tab contains the irrigation logic. The supporting Edgent tabs contain the reusable Wi-Fi provisioning and cloud-connection logic. Both are required.
 
-1. Open Arduino IDE.
-2. Click **File > Examples > Blynk > Blynk.Edgent > Edgent_ESP32**.
-3. Click **File > Save As** and save a working copy named `Irrigation_Edgent_G1`, `Irrigation_Edgent_G2`, `Irrigation_Edgent_G3`, or `Irrigation_Edgent_G4`.
-4. Confirm that the Arduino editor shows the main `.ino` tab plus supporting tabs such as `BlynkEdgent.h` and `Settings.h`.
-5. Open the main `.ino` tab. Replace its contents with the code below. Do not delete or rename the supporting tabs.
-6. Change `CLASS_GROUP` to the station's group number.
-7. Replace `YOUR_TEMPLATE_ID` with the Template ID copied from that group's template.
-8. Leave `BLYNK_TEMPLATE_NAME` exactly as selected by the group block. Do not add a dash.
+1. **ESP IRRIGATION BOX (Arduino IDE) —** Connect the box to the computer by USB, then open Arduino IDE.
+2. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > Examples > Blynk > Blynk.Edgent > Edgent_ESP32**.
+3. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > Save As** and save a working copy named `Irrigation_Edgent_G1`, `Irrigation_Edgent_G2`, `Irrigation_Edgent_G3`, or `Irrigation_Edgent_G4`.
+4. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that the Arduino editor shows the main `.ino` tab plus supporting tabs such as `BlynkEdgent.h` and `Settings.h`.
+5. **ESP IRRIGATION BOX (Arduino IDE) —** Open the main `.ino` tab. Replace its contents with the code below. Do not delete or rename the supporting tabs.
+6. **ESP IRRIGATION BOX (Arduino IDE) —** Change `CLASS_GROUP` to the station's group number.
+7. **ESP IRRIGATION BOX (Arduino IDE) —** Replace `YOUR_TEMPLATE_ID` with the Template ID copied from that group's template.
+8. **ESP IRRIGATION BOX (Arduino IDE) —** Leave `BLYNK_TEMPLATE_NAME` exactly as selected by the group block. Do not add a dash.
 
 ```cpp
 #define BLYNK_PRINT Serial
@@ -676,16 +699,16 @@ The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not 
 
 Before uploading:
 
-1. Confirm that `YOUR_TEMPLATE_ID` has been replaced.
-2. Confirm that `CLASS_GROUP` matches the group number printed on the irrigation box.
-3. Confirm that **Tools > Board** is the correct ESP32 board and **Tools > Port** is the box's USB port.
-4. Keep the pump or valve disconnected from the relay contacts.
-5. Click **Upload**.
-6. Open **Serial Monitor** at 115200 baud after the upload finishes.
+1. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that `YOUR_TEMPLATE_ID` has been replaced.
+2. **ESP IRRIGATION BOX (Arduino IDE + physical box) —** Confirm that `CLASS_GROUP` matches the group number printed on the physical box.
+3. **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that **Tools > Board** is the correct ESP32 board and **Tools > Port** is the box's USB port.
+4. **ESP IRRIGATION BOX (physical hardware) —** Keep the pump or valve disconnected from the relay contacts.
+5. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Upload**.
+6. **ESP IRRIGATION BOX (Arduino IDE) —** Open **Serial Monitor** at 115200 baud after the upload finishes.
 
 The example defines the ESP32 BOOT button on GPIO0 as the Edgent reset button. It does not use GPIO27 or GPIO35. Do not change `Settings.h` during this beginner activity.
 
-**Checkpoint 7:** Arduino IDE reports a successful upload, the relay remains off, and Serial Monitor shows the Edgent firmware waiting for configuration or entering setup mode. Do not continue if the relay energizes during startup.
+**Checkpoint 7 — ESP IRRIGATION BOX:** Arduino IDE reports a successful upload, the relay remains off, and Serial Monitor shows the Edgent firmware waiting for configuration or entering setup mode. Do not continue if the relay energizes during startup.
 
 ## Part 8: Provision Wi-Fi and create the edge device
 
@@ -704,46 +727,46 @@ The image shows Group 1 as an example. The temporary ESP32 setup network is not 
 
 ### Prepare the phone and ESP32
 
-1. Connect the phone to the classroom's **2.4 GHz Wi-Fi** network.
-2. Confirm that the phone can reach the internet on that network.
-3. Turn on the ESP32 and wait for its Edgent setup mode. Serial Monitor should indicate that it is waiting for configuration.
-4. Open **Blynk IoT** and confirm that `itetu.training@gmail.com` is signed in.
-5. Allow **Nearby devices**, **Local network**, or **Location** permission if the operating system requests it. Blynk needs the relevant permission to discover the ESP32 setup network.
+1. **MOBILE DEVICE —** Connect the phone to the classroom's **2.4 GHz Wi-Fi** network.
+2. **MOBILE DEVICE —** Confirm that the phone can reach the internet on that network.
+3. **ESP IRRIGATION BOX —** Turn on the ESP32 and wait for its Edgent setup mode. In Arduino IDE on the connected computer, Serial Monitor should indicate that it is waiting for configuration.
+4. **MOBILE DEVICE —** Open **Blynk IoT** and confirm that `itetu.training@gmail.com` is signed in.
+5. **MOBILE DEVICE —** Allow **Nearby devices**, **Local network**, or **Location** permission if the operating system requests it. Blynk needs the relevant permission to discover the ESP32 setup network.
 
 ### Add and connect the edge device
 
-1. Open the app's **menu icon** at the top-right.
-2. Tap **+ Add New Device** or **Add new device**.
-3. Tap **Find Devices Nearby**.
-4. Tap **Start** or **Ready**.
-5. Wait for the device list. Select the setup device whose name begins with `Blynk` and contains your exact template name, such as `Irrigation G2`.
-6. If iOS opens system Wi-Fi settings, select that Blynk setup network, return to the Blynk app, and tap **Already connected**.
-7. On **Connect your device to WiFi**, tap **Choose Wi-Fi network**.
-8. Select the approved classroom 2.4 GHz network. Do not choose a 5 GHz-only or browser-sign-in network.
-9. Enter the Wi-Fi password privately.
-10. Leave **Remember this network** off on a shared device unless the instructor specifically wants Blynk to retain it for the next group.
-11. Tap **Continue**.
-12. Keep the phone close to the ESP32 and wait. Do not close the app, unplug the ESP32, or switch networks while it shows connecting or configuring.
-13. When Blynk reports that the device is connected, tap **Continue**.
+1. **MOBILE DEVICE —** Open the Blynk IoT app's **menu icon** at the top-right.
+2. **MOBILE DEVICE —** Tap **+ Add New Device** or **Add new device**.
+3. **MOBILE DEVICE —** Tap **Find Devices Nearby**.
+4. **MOBILE DEVICE —** Tap **Start** or **Ready**.
+5. **MOBILE DEVICE —** Wait for the device list. Select the setup device whose name begins with `Blynk` and contains your exact template name, such as `Irrigation G2`.
+6. **MOBILE DEVICE —** If iOS opens system Wi-Fi settings, select that Blynk setup network, return to the Blynk app, and tap **Already connected**.
+7. **MOBILE DEVICE —** On **Connect your device to WiFi**, tap **Choose Wi-Fi network**.
+8. **MOBILE DEVICE —** Select the approved classroom 2.4 GHz network. Do not choose a 5 GHz-only or browser-sign-in network.
+9. **MOBILE DEVICE —** Enter the Wi-Fi password privately.
+10. **MOBILE DEVICE —** Leave **Remember this network** off on a shared device unless the instructor specifically wants Blynk to retain it for the next group.
+11. **MOBILE DEVICE —** Tap **Continue**.
+12. **MOBILE DEVICE + ESP IRRIGATION BOX —** Keep the phone close to the ESP32 and wait. Do not close the app, unplug the ESP32, or switch networks while it shows connecting or configuring.
+13. **MOBILE DEVICE —** When Blynk reports that the device is connected, tap **Continue**.
 
 ### Name and verify the device
 
-1. In **Device Name**, enter the exact space-separated name from the group table:
+1. **MOBILE DEVICE —** In **Device Name**, enter the exact space-separated name from the group table:
 
    - Group 1: `TU Box G1`
    - Group 2: `TU Box G2`
    - Group 3: `TU Box G3`
    - Group 4: `TU Box G4`
 
-2. Do not type a dash or hyphen.
-3. Review the device profile and confirm that its template and group number match.
-4. Tap **Apply**.
-5. Tap **Continue**.
-6. Tap **Exit to app**.
-7. Open **Devices** and tap the newly created `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` tile.
-8. Confirm that the device shows **Online** and that the four-widget mobile dashboard appears.
+2. **MOBILE DEVICE —** Do not type a dash or hyphen.
+3. **MOBILE DEVICE —** Review the device profile and confirm that its template and group number match.
+4. **MOBILE DEVICE —** Tap **Apply**.
+5. **MOBILE DEVICE —** Tap **Continue**.
+6. **MOBILE DEVICE —** Tap **Exit to app**.
+7. **MOBILE DEVICE —** Open **Devices** and tap the newly created `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` tile.
+8. **MOBILE DEVICE —** Confirm that the device shows **Online** and that the four-widget mobile dashboard appears.
 
-**Checkpoint 8:** all four statements are true:
+**Checkpoint 8 — MOBILE DEVICE + ESP IRRIGATION BOX:** all four statements are true:
 
 - the device tile has the exact `TU Box G1`, `TU Box G2`, `TU Box G3`, or `TU Box G4` group name;
 - the device shows **Online**;
@@ -754,46 +777,46 @@ Under the hood, the ESP32 temporarily operates as a Wi-Fi access point. The phon
 
 ### If provisioning fails
 
-- Read Serial Monitor before trying again. It normally reveals whether the ESP32 cannot join Wi-Fi or cannot reach Blynk.Cloud.
-- Confirm that the Template ID and Template Name in the sketch exactly match the selected group template.
-- Confirm that the Wi-Fi network is 2.4 GHz and does not require a browser login page.
-- If an existing device record must keep its data, open that device in the app, open its action menu, and choose **Reconfigure**. Do not create a duplicate.
-- With the instructor present, holding the ESP32 **BOOT** button for about 10 seconds while the Edgent firmware is running clears locally stored provisioning credentials and returns it to setup mode.
-- Never delete another group's device while troubleshooting.
+- **ESP IRRIGATION BOX (Serial Monitor) —** Read the latest message before trying again. It normally reveals whether the ESP32 cannot join Wi-Fi or cannot reach Blynk.Cloud.
+- **ESP IRRIGATION BOX (Arduino IDE) —** Confirm that the Template ID and Template Name in the sketch exactly match the selected group template.
+- **MOBILE DEVICE —** Confirm that the selected Wi-Fi network is 2.4 GHz and does not require a browser login page.
+- **MOBILE DEVICE —** If an existing device record must keep its data, open that device in the Blynk IoT app, open its action menu, and choose **Reconfigure**. Do not create a duplicate.
+- **ESP IRRIGATION BOX (physical hardware) —** With the instructor present, hold the ESP32 **BOOT** button for about 10 seconds while the Edgent firmware is running to clear locally stored provisioning credentials and return it to setup mode.
+- **MOBILE DEVICE —** Never delete another group's device while troubleshooting.
 
 For the underlying sequence and current app screens, see Blynk's [Edgent Wi-Fi provisioning guide](https://docs.blynk.io/en/getting-started/activating-devices/blynk-edgent-wifi-provisioning) and [Add New Device guide](https://docs.blynk.io/en/blynk.apps/device-management/add-new-device).
 
 ## Part 9: Test without a pump
 
-1. Confirm again that the pump or valve is disconnected from the relay contacts.
-2. Open Serial Monitor at 115200 baud.
-3. Wait for Blynk to report that the device is ready or online.
-4. Check that the mobile dashboard shows a changing moisture value.
-5. Tap **Water 5 Seconds** once.
-6. Confirm that the GPIO27 relay indicator turns on, `Pump State` changes to 1, and `Device Status` shows `WATERING`.
-7. Confirm that the relay turns off after about five seconds and the dashboard returns to `Pump State = 0` and `READY`.
-8. Turn off the phone's Wi-Fi during a new test. Confirm that the relay still turns off after five seconds.
-9. Repeat the test three times before connecting a real load.
+1. **ESP IRRIGATION BOX (physical hardware) —** Confirm again that the pump or valve is disconnected from the relay contacts.
+2. **ESP IRRIGATION BOX (Arduino IDE) —** Open Serial Monitor at 115200 baud.
+3. **ESP IRRIGATION BOX (Serial Monitor) —** Wait for Blynk to report that the device is ready or online.
+4. **MOBILE DEVICE —** Check that the mobile dashboard shows a changing moisture value.
+5. **MOBILE DEVICE —** Tap **Water 5 Seconds** once.
+6. **ESP IRRIGATION BOX + MOBILE DEVICE —** Confirm that the GPIO27 relay indicator turns on, `Pump State` changes to 1, and `Device Status` shows `WATERING`.
+7. **ESP IRRIGATION BOX + MOBILE DEVICE —** Confirm that the relay turns off after about five seconds and the dashboard returns to `Pump State = 0` and `READY`.
+8. **MOBILE DEVICE + ESP IRRIGATION BOX —** Turn off the phone's Wi-Fi during a new test, then watch the physical relay. Confirm that it still turns off after five seconds.
+9. **MOBILE DEVICE + ESP IRRIGATION BOX —** Repeat the request-and-relay observation three times before connecting a real load.
 
 Stop immediately if the relay turns on during ESP32 reset, remains on longer than five seconds, or behaves opposite to the comments in the code. The relay board may not match the expected active-low design.
 
-**Checkpoint 9:** three consecutive no-load tests start only after one dashboard request and stop automatically after approximately five seconds.
+**Checkpoint 9 — MOBILE DEVICE + ESP IRRIGATION BOX:** three consecutive no-load tests start only after one dashboard request and stop automatically after approximately five seconds.
 
 ## Part 10: Supervised water test
 
 Only continue after the no-load test passes.
 
-1. Disconnect all power.
-2. Connect a low-voltage pump or valve to the relay's `COM` and `NO` terminals using its separate fused supply.
-3. Check tubing, polarity, insulation, and the water path.
-4. Restore power while a teacher or another responsible person watches the system.
-5. Tap the watering control once.
-6. Verify that water flows to the correct area and stops after five seconds.
-7. Check for leaks and confirm that the ESP32 does not reset when the pump starts.
+1. **ESP IRRIGATION BOX (physical hardware) —** Disconnect all power.
+2. **ESP IRRIGATION BOX (physical hardware) —** Connect a low-voltage pump or valve to the relay's `COM` and `NO` terminals using its separate fused supply.
+3. **ESP IRRIGATION BOX (physical hardware) —** Check tubing, polarity, insulation, and the water path.
+4. **ESP IRRIGATION BOX (physical hardware) —** Restore power while a teacher or another responsible person watches the system.
+5. **MOBILE DEVICE —** Tap the watering control once.
+6. **ESP IRRIGATION BOX (physical hardware) —** Verify that water flows to the correct area and stops after five seconds.
+7. **ESP IRRIGATION BOX (physical hardware) —** Check for leaks and confirm that the ESP32 does not reset when the pump starts.
 
 Do not repeatedly press the button to defeat the short-run limit. A later version should also include a tank-empty input, a longer lockout between runs, flow confirmation, and a physical emergency stop.
 
-**Checkpoint 10:** the supervised low-voltage water test delivers water to the intended area, stops automatically, and causes no leak or ESP32 reset.
+**Checkpoint 10 — ESP IRRIGATION BOX:** the supervised low-voltage water test delivers water to the intended area, stops automatically, and causes no leak or ESP32 reset.
 
 ## Record your test results
 
@@ -812,10 +835,10 @@ Complete this table during the test.
 
 Answer these questions:
 
-1. What is the difference between GPIO27 and Virtual Pin V1?
-2. Why does the program use a timer instead of leaving the phone switch in control of the relay?
-3. What additional sensor should prevent a pump from running with an empty tank?
-4. Why are the Wi-Fi password and Auth Token not written in the Edgent sketch?
+- **Question 1:** What is the difference between GPIO27 and Virtual Pin V1?
+- **Question 2:** Why does the program use a timer instead of leaving the phone switch in control of the relay?
+- **Question 3:** What additional sensor should prevent a pump from running with an empty tank?
+- **Question 4:** Why are the Wi-Fi password and Auth Token not written in the Edgent sketch?
 
 ## Troubleshooting
 
