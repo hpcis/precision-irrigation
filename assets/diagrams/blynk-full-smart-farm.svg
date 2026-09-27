@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Complete smart farm data and control flow</title>
+  <desc id="desc">Five measurements enter the ESP32. The ESP32 applies four local automatic rules, updates four relays and the LCD, publishes readings and states to Blynk Cloud, and accepts one five-second manual irrigation request.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7fffb"/><stop offset="1" stop-color="#eef7ff"/></linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00a76f"/><stop offset="1" stop-color="#007c68"/></linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#087ea4"/></marker>
+    <marker id="orangeArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#e76818"/></marker>
+    <filter id="shadow"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-opacity="0.14"/></filter>
+    <style>
+      .title{font:700 42px Arial,sans-serif;fill:#073b4c}.subtitle{font:24px Arial,sans-serif;fill:#315866}
+      .head{font:700 27px Arial,sans-serif;fill:#fff}.body{font:22px Arial,sans-serif;fill:#123743}.small{font:19px Arial,sans-serif;fill:#315866}
+      .pin{font:700 19px Consolas,monospace;fill:#006c58}.state{font:700 20px Arial,sans-serif;fill:#9a3f08}
+      .card{fill:#fff;stroke:#9dd8c2;stroke-width:3;rx:20;filter:url(#shadow)}
+    </style>
+  </defs>
+  <rect width="1600" height="920" fill="url(#bg)"/>
+  <text x="800" y="62" text-anchor="middle" class="title">THE COMPLETE IOT SMART FARM</text>
+  <text x="800" y="99" text-anchor="middle" class="subtitle">Local automation keeps working; Blynk adds monitoring and one timed request.</text>
+
+  <rect class="card" x="55" y="145" width="340" height="525"/>
+  <rect x="55" y="145" width="340" height="72" rx="20" fill="url(#green)"/><rect x="55" y="195" width="340" height="22" fill="url(#green)"/>
+  <text x="225" y="190" text-anchor="middle" class="head">SENSORS</text>
+  <text x="90" y="260" class="body">LIGHT</text><text x="360" y="260" text-anchor="end" class="pin">GPIO34</text>
+  <text x="90" y="325" class="body">TEMPERATURE</text><text x="360" y="325" text-anchor="end" class="pin">GPIO4</text>
+  <text x="90" y="390" class="body">HUMIDITY</text><text x="360" y="390" text-anchor="end" class="pin">GPIO4</text>
+  <text x="90" y="455" class="body">SOIL MOISTURE</text><text x="360" y="455" text-anchor="end" class="pin">GPIO35</text>
+  <text x="90" y="520" class="body">TANK LEVEL</text><text x="360" y="520" text-anchor="end" class="pin">18 + 19</text>
+  <rect x="87" y="565" width="276" height="72" rx="12" fill="#fff3e8" stroke="#f39b62" stroke-width="2"/>
+  <text x="225" y="593" text-anchor="middle" class="small">HC-SR04 Echo must be</text><text x="225" y="621" text-anchor="middle" class="state">reduced to 3.3 V</text>
+
+  <line x1="395" y1="410" x2="500" y2="410" stroke="#087ea4" stroke-width="8" marker-end="url(#arrow)"/>
+  <text x="448" y="383" text-anchor="middle" class="small">read</text>
+
+  <rect class="card" x="510" y="145" width="450" height="525"/>
+  <rect x="510" y="145" width="450" height="72" rx="20" fill="#075985"/><rect x="510" y="195" width="450" height="22" fill="#075985"/>
+  <text x="735" y="190" text-anchor="middle" class="head">ESP32 IRRIGATION BOX</text>
+  <text x="735" y="258" text-anchor="middle" class="body">1. Read sensors every 2 seconds</text>
+  <text x="735" y="306" text-anchor="middle" class="body">2. Apply thresholds + hysteresis</text>
+  <text x="735" y="354" text-anchor="middle" class="body">3. Control all four relays locally</text>
+  <text x="735" y="402" text-anchor="middle" class="body">4. Rotate four LCD pages</text>
+  <text x="735" y="450" text-anchor="middle" class="body">5. Publish to Blynk every 10 seconds</text>
+  <rect x="555" y="500" width="360" height="122" rx="14" fill="#eaf7ff" stroke="#58b5dc" stroke-width="2"/>
+  <text x="735" y="535" text-anchor="middle" class="pin">LOCAL-FIRST DESIGN</text>
+  <text x="735" y="570" text-anchor="middle" class="small">Wi-Fi loss does not stop sensing,</text>
+  <text x="735" y="600" text-anchor="middle" class="small">LCD updates, or automatic rules.</text>
+
+  <line x1="960" y1="335" x2="1065" y2="335" stroke="#087ea4" stroke-width="8" marker-end="url(#arrow)"/>
+  <text x="1012" y="306" text-anchor="middle" class="small">telemetry</text>
+  <line x1="1065" y1="470" x2="960" y2="470" stroke="#e76818" stroke-width="8" marker-end="url(#orangeArrow)"/>
+  <text x="1012" y="505" text-anchor="middle" class="small">5 s request</text>
+
+  <rect class="card" x="1075" y="145" width="470" height="525"/>
+  <rect x="1075" y="145" width="470" height="72" rx="20" fill="url(#green)"/><rect x="1075" y="195" width="470" height="22" fill="url(#green)"/>
+  <text x="1310" y="190" text-anchor="middle" class="head">BLYNK + PHONE</text>
+  <text x="1120" y="258" class="body">V0  Light (%)</text><text x="1120" y="298" class="body">V1  Temperature (°C)</text>
+  <text x="1120" y="338" class="body">V2  Humidity (%)</text><text x="1120" y="378" class="body">V3  Soil moisture (%)</text>
+  <text x="1120" y="418" class="body">V4  Tank level (cm)</text><text x="1120" y="458" class="state">V5  Water 5 Seconds</text>
+  <text x="1120" y="498" class="body">V6–V9  Relay states</text><text x="1120" y="538" class="body">V10  System status</text>
+  <rect x="1120" y="570" width="380" height="60" rx="12" fill="#fff3e8" stroke="#f39b62" stroke-width="2"/>
+  <text x="1310" y="608" text-anchor="middle" class="state">Cloud requests; ESP32 decides.</text>
+
+  <text x="800" y="720" text-anchor="middle" class="title" font-size="34">FOUR LOCAL AUTOMATIC OUTPUTS</text>
+  <g transform="translate(65 760)"><rect class="card" width="335" height="115"/><text x="168" y="42" text-anchor="middle" class="state">LAMP · GPIO25</text><text x="168" y="78" text-anchor="middle" class="small">ON below 30% light</text></g>
+  <g transform="translate(445 760)"><rect class="card" width="335" height="115"/><text x="168" y="42" text-anchor="middle" class="state">FAN · GPIO26</text><text x="168" y="78" text-anchor="middle" class="small">ON above 30.0 °C</text></g>
+  <g transform="translate(825 760)"><rect class="card" width="335" height="115"/><text x="168" y="42" text-anchor="middle" class="state">IRRIGATION · GPIO27</text><text x="168" y="78" text-anchor="middle" class="small">ON below 40% soil</text></g>
+  <g transform="translate(1205 760)"><rect class="card" width="335" height="115"/><text x="168" y="42" text-anchor="middle" class="state">REFILL · GPIO14</text><text x="168" y="78" text-anchor="middle" class="small">ON below 30 cm</text></g>
+</svg>

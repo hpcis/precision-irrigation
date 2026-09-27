@@ -12,7 +12,7 @@ The finished controller measures soil moisture, ambient light, temperature, and 
 
 The ESP32 is an IoT-capable board, but the sketches in this tutorial first run without Wi-Fi. They teach the local sensing and automation layer before adding cloud control.
 
-After the standalone watering stage works safely, continue with the [Beginner ESP32 Irrigation Dashboard Tutorial](BLYNK_TUTORIAL.md). It explains the IoT system, connects the ESP32 to Wi-Fi and Blynk.Cloud, adds phone monitoring, and implements a five-second manual watering request.
+After the standalone hardware stages work safely, continue with the [ESP32 Smart Farm with Blynk learner tutorial](BLYNK_TUTORIAL.md). It connects the complete box to Wi-Fi and Blynk.Cloud, publishes all five measurements, shows all four automatic output states, keeps local control running without the internet, and implements one five-second manual irrigation request.
 
 ![Agricultural controller scope showing sensors, ESP32, outputs, and future IoT connectivity](assets/diagrams/iot-scope.png)
 
