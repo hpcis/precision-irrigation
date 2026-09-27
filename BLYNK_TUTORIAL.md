@@ -316,13 +316,42 @@ For V6, V7, V8, and V9:
 4. Count the list: there must be exactly eleven workshop rows.
 5. Confirm that V0 through V10 each appear once, in order, with no duplicate pin.
 
-**Checkpoint 4:** Table 6 and the live Datastreams list match exactly.
+### 4.F — Connect each relay to its GPIO and Blynk feedback
+
+> **Where:** Web dashboard or mobile device — the live group-device dashboard after the ESP32 connects.
+
+The four relay-state datastreams are **feedback from the ESP32**. They report what the physical relay outputs are doing after the local automatic rules and any manual watering request have been combined.
+
+**Table 7. End-to-end relay, GPIO, automatic-rule, and Blynk-state mapping.**
+
+| Relay channel | Physical function | ESP32 output | Automatic rule | Blynk state datastream | `0` means | `1` means |
+|---:|---|---:|---|---|---|---|
+| Relay 1 | Grow lamp | GPIO25 | ON below 30%; OFF at 35% | Lamp State (V6) | Lamp OFF | Lamp ON |
+| Relay 2 | Ventilation fan | GPIO26 | ON above 30.0 °C; OFF at 29.0 °C | Fan State (V7) | Fan OFF | Fan ON |
+| Relay 3 | Irrigation or spray | GPIO27 | ON below 40%; OFF at 45% | Irrigation State (V8) | Irrigation OFF | Irrigation ON |
+| Relay 4 | Tank refill | GPIO14 | ON below 30 cm; OFF at 32 cm | Refill State (V9) | Refill OFF | Refill ON |
+
+`Water 5 Seconds (V5)` is deliberately absent from the relay-state column. V5 is an **input request** from the dashboard, while V8 is the **actual irrigation-output feedback** returned by the ESP32.
+
+For example, the sequence below is read in V6, V7, V8, V9 order:
+
+```text
+0, 1, 1, 0
+│  │  │  └─ Refill OFF
+│  │  └──── Irrigation ON
+│  └─────── Fan ON
+└────────── Lamp OFF
+```
+
+This sequence does not by itself mean the dashboard is frozen. It means the current sensor readings have not crossed an OFF or ON threshold. In particular, if V8 is already `1` because the soil is dry, pressing V5 cannot make the irrigation relay look more ON. Part 9.B therefore makes the soil moist and gets V8 to `0` before testing the five-second request.
+
+**Checkpoint 4:** Tables 6 and 7 agree with the live Datastreams list, and you can explain both V5 and the four state values without confusing them with GPIO numbers.
 
 ## Part 5: Create the group device and copy its three Blynk values
 
 The **Template Name** and **Template ID** identify the blueprint. The **Auth Token** identifies one device made from that blueprint. All three values must belong to the same group.
 
-**Table 7. The three Blynk values that will be pasted into the firmware.**
+**Table 8. The three Blynk values that will be pasted into the firmware.**
 
 | Value | Where it comes from | Example shape |
 |---|---|---|
@@ -380,7 +409,7 @@ The mobile and web dashboards are separate layouts. This Part builds the phone l
 
 *Figure 9. Suggested learner layout with five measurements, one timed request, four output states, and one status field.*
 
-**Table 8. Widget-to-datastream map for the mobile dashboard.**
+**Table 9. Widget-to-datastream map for the mobile dashboard.**
 
 | Widget title | Suggested widget | Datastream |
 |---|---|---|
@@ -410,13 +439,13 @@ The mobile and web dashboards are separate layouts. This Part builds the phone l
 
 > **Where:** Mobile device — mobile template editor.
 
-For each of the first five rows in Table 8:
+For each of the first five rows in Table 9:
 
 1. Tap **+** or tap an empty area of the canvas.
 2. Choose the suggested widget. If **Gauge** or **Level** is unavailable, use **Labeled Value**.
 3. Open the widget settings.
 4. Tap **Datastream** and choose the exact named datastream and Virtual Pin.
-5. Set the widget title to the name in Table 8.
+5. Set the widget title to the name in Table 9.
 6. Close the settings to save, then repeat for the next sensor.
 
 ### 6.C — Add the five-second request button
@@ -430,6 +459,8 @@ For each of the first five rows in Table 8:
 5. Choose **Push** or **Momentary** mode if available. If only Switch mode is available, keep it; the ESP32 resets V5 to 0 after accepting the request.
 6. Do not test the button yet.
 
+The V5 widget is a request button, not a fifth relay indicator. When automatic irrigation is currently OFF, a successful request briefly changes the actual irrigation feedback on V8 and changes `System Status (V10)` to a manual-watering message.
+
 ### 6.D — Add the four output states and system status
 
 > **Where:** Mobile device — mobile template editor.
@@ -438,12 +469,13 @@ For each of the first five rows in Table 8:
 2. Repeat for `Fan State (V7)`, `Irrigation State (V8)`, and `Refill State (V9)`.
 3. Add a **Labeled Value** for `System Status (V10)`.
 4. Arrange these five widgets below the sensor values and request button.
+5. Place them left to right or top to bottom in V6, V7, V8, V9 order: **Lamp, Fan, Irrigation, Refill**. This makes a sequence such as `0,1,1,0` readable using Table 7.
 
 ### 6.E — Verify the mobile layout
 
 > **Where:** Mobile device — mobile template editor and Devices page.
 
-1. Compare every widget with Table 8.
+1. Compare every widget with Table 9.
 2. Check especially that `Temperature` uses V1, `Humidity` uses V2, and `Water 5 Seconds` uses V5.
 3. Leave the editor and open **Devices**.
 4. Confirm that the matching `TU Box G#` tile exists. **Offline** is expected before Part 8.
@@ -852,7 +884,7 @@ void loop() {
 
 > **Where:** ESP irrigation box computer — read the sketch in Arduino IDE; observe the physical box while discussing it.
 
-**Table 9. How the complete firmware is divided into understandable jobs.**
+**Table 10. How the complete firmware is divided into understandable jobs.**
 
 | Code area | Job |
 |---|---|
@@ -939,12 +971,16 @@ Test one input at a time and allow two seconds for the next reading:
 
 > **Where:** ESP irrigation box and mobile device. Keep the real irrigation pump disconnected.
 
-1. Place the soil probe in a moist sample until `Soil Moisture` reaches at least 45% and `Irrigation State` is OFF. This prevents the automatic soil rule from keeping the relay on.
-2. Tap **Water 5 Seconds** once.
-3. Confirm that the GPIO27 relay LED turns on and `Irrigation State` changes to ON.
-4. Confirm that the button returns to its off position.
-5. Confirm that the GPIO27 relay LED turns off after about five seconds and `Irrigation State` returns to OFF.
-6. Repeat the test three times.
+1. Read the relay indicators in V6, V7, V8, V9 order using Table 7.
+2. Place the soil probe in a moist sample until `Soil Moisture (V3)` reaches at least 45% and `Irrigation State (V8)` is OFF. This removes the automatic irrigation demand and makes the manual test visible.
+3. Confirm that `System Status (V10)` shows `AUTOMATIC CONTROL` before the test.
+4. Tap **Water 5 Seconds (V5)** once.
+5. Confirm that V5 automatically returns to `0`; this shows that the ESP32 accepted and reset the request.
+6. Confirm that the GPIO27 relay LED turns on, V8 changes to `1`, and V10 shows `MANUAL WATER 5 SEC`.
+7. After about five seconds, confirm that the GPIO27 relay LED turns off, V8 returns to `0`, and V10 returns to `AUTOMATIC CONTROL`.
+8. Repeat the complete test three times.
+
+If V8 was already `1` before step 4, the test cannot prove whether V5 worked: the automatic dry-soil rule already had GPIO27 on. Return to step 2 and raise the soil reading to at least 45% first.
 
 ### 9.C — Prove that local control survives internet loss
 
@@ -957,7 +993,7 @@ Test one input at a time and allow two seconds for the next reading:
 5. Wait up to about ten seconds for the firmware's next Blynk reconnection attempt.
 6. Confirm that the dashboard becomes live again without resetting the ESP32.
 
-**Table 10. Learner acceptance record.**
+**Table 11. Learner acceptance record.**
 
 | Test | Expected evidence | Pass / retry |
 |---|---|---|
@@ -1027,7 +1063,7 @@ The values from the Word material are useful workshop starting points, but analo
 
 ## Troubleshooting
 
-**Table 11. Symptom-based checks.**
+**Table 12. Symptom-based checks.**
 
 | Symptom | Check |
 |---|---|
@@ -1041,6 +1077,8 @@ The values from the Word material are useful workshop starting points, but analo
 | Temperature/humidity are blank | Check DHT22 power, GPIO4 data, module pull-up, and two-second sampling |
 | Tank is blank or status says `CHECK TANK SENSOR` | Check Trigger GPIO18, Echo GPIO19 through the level divider, sensor aim, and common ground |
 | Refill relay stays on unexpectedly | Confirm the tank reading, 30/32 cm rules, active-low logic, and the corrected tank-level calculation |
+| Relay states remain `0,1,1,0` | Read them as V6–V9 using Table 7: lamp OFF, fan ON, irrigation ON, refill OFF; change one sensor past its opposite threshold to prove the corresponding state can change |
+| Pressing V5 produces no visible relay change | Check whether V8 was already `1`; make soil moisture at least 45% and wait for V8 to become `0` before repeating Part 9.B |
 | V5 ends but irrigation remains ON | The soil is below 40%, so the automatic irrigation rule still requests water; moisten the test sample to at least 45% |
 | Relay logic is reversed | Stop, disconnect loads, and verify whether the installed relay board is active-low before changing code |
 | Values move in the wrong direction | Calibrate the raw endpoints in Part 11 and confirm the module's analog-output behavior |
