@@ -222,7 +222,7 @@ Do not publish a Wi-Fi password, account password, or Blynk Auth Token. Blynk.Ed
 2. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Tools > Manage Libraries**.
 3. **ESP IRRIGATION BOX (Arduino IDE) —** Click the search field and type `Blynk`.
 4. **ESP IRRIGATION BOX (Arduino IDE) —** Find the library published by Volodymyr Shymanskyy.
-5. **ESP IRRIGATION BOX (Arduino IDE) —** Select the latest stable version shown by Library Manager.
+5. **ESP IRRIGATION BOX (Arduino IDE) —** Select Blynk version **1.3.5**, the version used to verify this tutorial.
 6. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Install**.
 7. **ESP IRRIGATION BOX (Arduino IDE) —** Wait until Arduino IDE reports that installation has finished.
 8. **ESP IRRIGATION BOX (Arduino IDE) —** Click **File > Examples > Blynk > Blynk.Edgent**.
@@ -621,15 +621,24 @@ void startWatering() {
   digitalWrite(irrigationRelay, LOW);   // Active-low relay: LOW is on
   watering = true;
   wateringStartedAt = millis();
+
+  // Edgent runs this timer even while it is handling Wi-Fi reconnection or
+  // provisioning. The relay therefore does not depend on loop() returning
+  // promptly in order to stop.
+  if (!edgentTimer.setTimeout(wateringTimeMs, stopWatering).isValid()) {
+    stopWatering();  // Fail closed if no safety-timer slot is available
+    return;
+  }
+
   Blynk.virtualWrite(V2, 1);
   Blynk.virtualWrite(V3, "WATERING");
 }
 
 // Blynk calls this function whenever the phone changes V1.
 BLYNK_WRITE(V1) {
-  int request = param.asInt();
+  int wateringRequest = param.asInt();
 
-  if (request == 1) {
+  if (wateringRequest == 1) {
     startWatering();
     Blynk.virtualWrite(V1, 0);  // Return the phone control to its off state
   }
@@ -683,6 +692,10 @@ void loop() {
 
 The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not put an unrestricted `Blynk.virtualWrite()` in `loop()`: Blynk warns that sending on every loop can flood the cloud connection. See [Send Data From Hardware to Blynk](https://docs.blynk.io/en/getting-started/how-to-display-any-sensor-data-in-blynk-app).
 
+The five-second shutdown deliberately uses Edgent's existing `edgentTimer`. Edgent also runs that timer while it is inside provisioning and Wi-Fi/cloud reconnection loops. The separate `millis()` test in `loop()` remains as a second shutdown check during normal operation. Do not replace both checks with only a delay or a timer that runs after `BlynkEdgent.run()`.
+
+The variable inside `BLYNK_WRITE(V1)` is named `wateringRequest` intentionally. Blynk's macro already supplies an internal function parameter named `request`; declaring another variable with that name causes an ESP32 compile error.
+
 `BlynkEdgent.begin()` starts dynamic provisioning and `BlynkEdgent.run()` maintains provisioning, Wi-Fi, cloud connectivity, and the application connection. Do not add `BLYNK_AUTH_TOKEN`, `wifiName`, `wifiPassword`, or `Blynk.begin(...)` to this Edgent sketch.
 
 ### Read the program as five small jobs
@@ -693,7 +706,7 @@ The sketch uses `BlynkTimer` to send sensor data once every two seconds. Do not 
 | `soilPin`, `irrigationRelay` | Connects the software to GPIO35 and GPIO27 |
 | `sendSensorData()` | Reads the probe and publishes V0 every two seconds |
 | `BLYNK_WRITE(V1)` | Receives one watering request from the dashboard |
-| Local `millis()` timer | Stops watering after five seconds even if the phone disconnects |
+| Edgent timeout plus local `millis()` check | Stops watering after five seconds, including during an Edgent connection attempt |
 
 `Blynk.virtualWrite(V0, ...)` sends information to the dashboard. `BLYNK_WRITE(V1)` receives information from the dashboard. These two directions are different and should be explained aloud before uploading.
 
@@ -705,6 +718,8 @@ Before uploading:
 4. **ESP IRRIGATION BOX (physical hardware) —** Keep the pump or valve disconnected from the relay contacts.
 5. **ESP IRRIGATION BOX (Arduino IDE) —** Click **Upload**.
 6. **ESP IRRIGATION BOX (Arduino IDE) —** Open **Serial Monitor** at 115200 baud after the upload finishes.
+
+This exact sketch was compile-checked using the complete official `Edgent_ESP32` example tabs, [Blynk library 1.3.5](https://github.com/blynkkk/blynk-library/releases/tag/v1.3.5), [Espressif ESP32 board package 2.0.17](https://github.com/espressif/arduino-esp32/releases/tag/2.0.17), and the **ESP32 Dev Module** board target. The generic-board warnings stating that the Edgent status LED is not configured are expected for this training box; a compile **error** is not.
 
 The example defines the ESP32 BOOT button on GPIO0 as the Edgent reset button. It does not use GPIO27 or GPIO35. Do not change `Settings.h` during this beginner activity.
 
@@ -795,7 +810,7 @@ For the underlying sequence and current app screens, see Blynk's [Edgent Wi-Fi p
 5. **MOBILE DEVICE —** Tap **Water 5 Seconds** once.
 6. **ESP IRRIGATION BOX + MOBILE DEVICE —** Confirm that the GPIO27 relay indicator turns on, `Pump State` changes to 1, and `Device Status` shows `WATERING`.
 7. **ESP IRRIGATION BOX + MOBILE DEVICE —** Confirm that the relay turns off after about five seconds and the dashboard returns to `Pump State = 0` and `READY`.
-8. **MOBILE DEVICE + ESP IRRIGATION BOX —** Turn off the phone's Wi-Fi during a new test, then watch the physical relay. Confirm that it still turns off after five seconds.
+8. **MOBILE DEVICE + ESP IRRIGATION BOX —** Start one new watering request, immediately put the phone in airplane mode, and watch the physical relay. Confirm that it still turns off after five seconds without the phone. Restore the phone's normal connection after the relay is off.
 9. **MOBILE DEVICE + ESP IRRIGATION BOX —** Repeat the request-and-relay observation three times before connecting a real load.
 
 Stop immediately if the relay turns on during ESP32 reset, remains on longer than five seconds, or behaves opposite to the comments in the code. The relay board may not match the expected active-low design.
@@ -844,7 +859,7 @@ Answer these questions:
 
 | Symptom | Check |
 | --- | --- |
-| Sketch does not compile | Update the Blynk library, open the `Edgent_ESP32` example, keep all supporting tabs, and confirm the ESP32 board package is selected |
+| Sketch does not compile | Use Blynk 1.3.5 and the verified ESP32 board package 2.0.17, reopen the `Edgent_ESP32` example, keep every supporting tab, and select **ESP32 Dev Module** |
 | ESP32 does not appear in **Find Devices Nearby** | Check Serial Monitor for waiting/configuration mode, allow nearby/local-network permissions, and confirm Template ID and Template Name are exact |
 | App cannot send Wi-Fi settings | Keep the phone near the ESP32; on iOS, connect to the Blynk setup network in Settings and return to the app |
 | ESP32 cannot join the network | Choose a 2.4 GHz network, re-enter its password, and avoid captive-portal or browser-sign-in networks |
