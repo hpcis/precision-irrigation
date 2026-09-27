@@ -1,18 +1,24 @@
 # ESP32 Agricultural Irrigation Tutorial
 
-This tutorial builds and tests a standalone agricultural control system. It includes every complete workshop sketch so you can copy one at a time into Arduino IDE, upload it, and test the hardware without changing the reference files.
+This learner tutorial builds and tests the agricultural control box one function at a time. Each stage includes a complete Arduino sketch that you can copy, verify, upload, and test before moving to the next stage.
 
 The finished controller measures soil moisture, ambient light, temperature, and tank level. It uses four active-low relay channels to control an irrigation pump or spray valve, a grow light, a cooling fan, and a tank-refill pump. A 16x2 I2C LCD shows the current readings and output states.
 
+![Finished ESP32 irrigation training box with LCD, relay board, sensors, antenna, and soil probe](assets/images/irrigation-box-finished.png)
+
+*This presentation-ready view was generated from photographs of the real training box. Use the pin table and safety diagram below as the wiring authority; do not trace wiring from the product image.*
+
 ## Scope of the IoT system
 
-The ESP32 is an IoT-capable board, but the supplied sketches contain no Wi-Fi, MQTT, web dashboard, or cloud code. They implement the local sensing and automation layer of an agricultural IoT system. Remote monitoring would require a later code change, so it is intentionally outside this tutorial.
+The ESP32 is an IoT-capable board, but the sketches in this tutorial first run without Wi-Fi. They teach the local sensing and automation layer before adding cloud control.
+
+After the standalone watering stage works safely, continue with the [Beginner Blynk Mobile-Control Tutorial](BLYNK_TUTORIAL.md). It adds phone monitoring and a five-second manual watering request.
 
 ![Agricultural controller scope showing sensors, ESP32, outputs, and future IoT connectivity](assets/diagrams/iot-scope.png)
 
 ## Important safety rules
 
-![Electrical safety zones for ESP32 logic, relays, and separately powered loads](assets/diagrams/safety.png)
+![Voltage and power safety plan for the ESP32, sensors, relay board, and loads](assets/diagrams/voltage-safety.svg)
 
 - Build and test the low-voltage controller before connecting pumps, lamps, fans, or mains wiring.
 - Never power a pump, fan, or lamp from an ESP32 GPIO, 3.3 V pin, USB port, or sensor shield rail. Use a separate power supply sized for each load.
@@ -22,17 +28,18 @@ The ESP32 is an IoT-capable board, but the supplied sketches contain no Wi-Fi, M
 - Keep every ESP32 GPIO at 3.3 V logic. Espressif specifies 3.6 V as the maximum allowed input voltage. Do not feed a 5 V potentiometer, soil-sensor output, LDR divider output, I2C pull-up, or HC-SR04 Echo signal directly into the ESP32. See the repository-hosted [ESP32 datasheet](output/pdf/esp32-datasheet.pdf).
 - Reduce the HC-SR04 Echo signal to 3.3 V with a suitable resistor divider or logic-level shifter. A common starting divider is 1 kOhm from Echo to GPIO19 and 2 kOhm from GPIO19 to ground.
 - A 5 V I2C backpack may pull SDA and SCL up to 5 V. Use a bidirectional I2C level shifter, or power the backpack at 3.3 V only if that particular LCD works reliably at 3.3 V.
+- The close-up photograph appears to show the expansion shield's shared voltage rail selected at 5 V. Treat that as an observation, not proof. Disconnect power, inspect the jumper, and verify the red `V` rail with a multimeter before connecting any sensor output to an ESP32 input.
 - Use a fuse on each load supply. Add the protection recommended for the load and driver, especially for DC motors and pumps.
 - Have a qualified electrician handle mains-voltage loads. Keep mains wiring out of the low-voltage breadboard and controller enclosure.
-- Do not leave this prototype operating unattended. The supplied code has no pump runtime limit, dry-run protection, overflow switch, sensor-failure shutdown, relay feedback, or emergency stop.
+- Do not leave this prototype operating unattended. The workshop code has no pump runtime limit, dry-run protection, overflow switch, sensor-failure shutdown, relay feedback, or emergency stop.
 
 ## Parts
 
 The complete smart-farming sketch uses the following parts:
 
-![Parts required for the ESP32 agricultural irrigation controller](assets/diagrams/parts.png)
+The box photographs confirm the complete training set: an ESP-32U with external antenna on the purple expansion shield, a 16x2 I2C LCD, DHT22, LDR circuit on blue perfboard, soil probe and interface module, HC-SR04, and four-channel relay board. The HC-SR04 is the separate blue board with two silver circular transducers.
 
-- ESP32 development board based on the original ESP32, such as the ESP-32U board shown in the references
+- ESP32 development board based on the original ESP32, such as the ESP-32U board shown in the product image above
 - ESP32 expansion shield or a suitable prototyping board
 - USB data cable and a stable ESP32 power source
 - 16x2 HD44780-compatible LCD with an I2C backpack at address `0x27`
@@ -47,7 +54,7 @@ The complete smart-farming sketch uses the following parts:
 
 For an irrigation-only bench test, you can begin with the ESP32, soil sensor, one active-low relay channel, LCD, and a low-voltage pump with its own supply.
 
-## Pin assignment from the supplied code
+## Pin assignment
 
 ![ESP32 sensor and relay pin assignment](assets/diagrams/pin-map.png)
 
@@ -67,7 +74,7 @@ For an irrigation-only bench test, you can begin with the ESP32, soil sensor, on
 
 GPIO34 and GPIO35 are appropriate analog inputs, but they are input-only and have no internal pull-up or pull-down resistors. Espressif documents this restriction in its [ESP32 hardware design guidelines](https://docs.espressif.com/projects/esp-hardware-design-guidelines/en/latest/esp32/esp-hardware-design-guidelines-en-master-esp32.pdf).
 
-## How the supplied controller behaves
+## How the controller behaves
 
 ![Control decisions for light, temperature, soil moisture, and tank level](assets/diagrams/control-logic.png)
 
@@ -78,24 +85,58 @@ GPIO34 and GPIO35 are appropriate analog inputs, but they are input-only and hav
 | Soil moisture    | Below 40 percent              | Turns the irrigation or spray relay on |
 | Tank water level | Below 30 cm in a 45 cm tank   | Turns the refill-pump relay on         |
 
-The ESP32 ADC returns a raw value with a default 12-bit range of 0 to 4095. The supplied sketch maps those raw values into percentages. The raw reading is not calibrated voltage; see the [Arduino-ESP32 ADC reference](https://docs.espressif.com/projects/arduino-esp32/en/latest/api/adc.html).
+The ESP32 ADC returns a raw value with a default 12-bit range of 0 to 4095. The source sketch maps soil readings from 4095 (dry) to 2000 (wet). One training slide instead describes 0 as the wet endpoint, but that does not match the supplied code. Treat both endpoints as starting values and replace them with measurements from your own sensor. The raw reading is not calibrated voltage; see the [Arduino-ESP32 ADC reference](https://docs.espressif.com/projects/arduino-esp32/en/latest/api/adc.html).
+
+### Corrections applied for learners
+
+| Source issue | Learner tutorial correction |
+| --- | --- |
+| Standalone tank sketch sets `waterLevel` to `0` | Calculates `tankHeight - distance`, matching the integrated sketch |
+| Training slide says a 45 cm tank and 20 cm air gap produce 15 cm of water | Uses the correct result: `45 - 20 = 25 cm` |
+| Training slide describes 0 as the wet soil endpoint | Follows the source code's 2000 starting value and requires local calibration |
+| Training wiring shows HC-SR04 Trigger and Echo directly | Requires a 5 V-to-3.3 V divider or level shifter on Echo before GPIO19 |
 
 ## Prepare Arduino IDE
-
-![Arduino IDE setup workflow for the ESP32 controller](assets/diagrams/software-setup.png)
 
 1. Install Arduino IDE.
 2. Install ESP32 board support through Boards Manager, following Espressif's [Arduino-ESP32 installation guide](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html).
 3. Select the board definition that matches your ESP32. If the exact board is unavailable, `ESP32 Dev Module` is commonly suitable for a generic original-ESP32 development board; confirm this with the board supplier.
 4. Select the COM port that appears when the board is connected.
-5. Install `DHT sensor library` by Adafruit from Library Manager. Also install its `Adafruit Unified Sensor` dependency. The library's [repository](https://github.com/adafruit/DHT-sensor-library) documents both requirements.
-6. Install a `LiquidCrystal_I2C` library that supports the exact API used by the reference code: `LiquidCrystal_I2C(0x27, 16, 2)` followed by `lcd.begin()` with no arguments. Libraries with the same header name are not interchangeable. The [compatible API demonstrated here](https://github.com/lucasmaziero/LiquidCrystal_I2C) uses the same constructor and zero-argument `begin()` call.
+5. Close Arduino IDE before preparing the libraries.
+6. Open this repository's `arduino-libraries` folder and copy **all of the folders inside it** into the machine's `Documents\Arduino\libraries` folder. Copy the individual library folders, not the enclosing `arduino-libraries` folder. Create `Documents\Arduino\libraries` if it does not exist. The result should look like this:
 
-If compilation reports that `lcd.begin()` needs arguments, the wrong `LiquidCrystal_I2C` implementation is installed. Replace the library instead of editing the supplied sketch.
+   ```text
+   Documents\Arduino\libraries\Adafruit_Unified_Sensor
+   Documents\Arduino\libraries\Arduino-LiquidCrystal-I2C-library-master
+   Documents\Arduino\libraries\DHT_sensor_library
+   Documents\Arduino\libraries\TinyDHT_sensor_library
+   Documents\Arduino\libraries\TinyLiquidCrystal
+   Documents\Arduino\libraries\TinyWireM
+   ```
+
+7. Reopen Arduino IDE. In **File > Preferences**, check that **Sketchbook location** is the machine's `Documents\Arduino` folder. If a different sketchbook location is configured, put the copied library folders in that location's `libraries` folder instead.
+8. Confirm that the libraries appear under **Sketch > Include Library** before compiling a sketch.
+
+Use the bundled library versions so that the examples match the tutorial. In particular, the supplied `LiquidCrystal_I2C` library supports the exact API used by the reference code: `LiquidCrystal_I2C(0x27, 16, 2)` followed by `lcd.begin()` with no arguments. Libraries with the same header name are not interchangeable. If compilation reports that `lcd.begin()` needs arguments, remove the conflicting `LiquidCrystal_I2C` implementation and copy the bundled version again instead of editing the supplied sketch.
 
 ## Build the low-voltage circuit
 
-![Low-voltage block wiring for sensors, ESP32, LCD, and active-low relay board](assets/diagrams/low-voltage-wiring.png)
+Plan the power rails before inserting signal wires. The shield has one shared `V` rail, while this build contains devices with different voltage needs.
+
+On the photographed shield, the three rows are labeled for Signal, Voltage, and Ground. The slide deck describes them as yellow `S`, red `V`, and black `G`. The jumper chooses whether the shared red row carries 3.3 V or 5 V.
+
+| Connection | Required electrical condition |
+| --- | --- |
+| ESP32 GPIO | 3.3 V logic; never allow an input above 3.6 V |
+| DHT22 data | Pull up to 3.3 V; many modules include a pull-up, so verify where it connects |
+| LDR and soil analog outputs | Keep the full output range between 0 V and 3.3 V |
+| HC-SR04 power and Trigger | Power a conventional HC-SR04 from 5 V; GPIO18 can drive Trigger |
+| HC-SR04 Echo | Reduce the 5 V Echo signal before GPIO19 with a divider or level shifter |
+| LCD SDA and SCL | Use 3.3 V pull-ups or a bidirectional I2C level shifter |
+| Relay module | Use the supply required by the board and confirm its inputs accept 3.3 V logic |
+| Pumps, fan, and lamp | Use separate fused load supplies through `COM` and `NO` contacts |
+
+If the shield's shared `V` rail is set to 5 V, do not use it to power an analog module whose output goes straight to GPIO34 or GPIO35 unless you have verified that its output cannot exceed 3.3 V. Use separate 3.3 V and 5 V connections when the modules require different rails.
 
 ### Connect the LCD
 
@@ -129,9 +170,7 @@ For each normally-off low-voltage load:
 
 The irrigation device belongs on the GPIO27 relay channel. The tank-refill pump belongs on the GPIO14 relay channel. These are separate functions and may use separate pumps.
 
-## Upload the supplied sketches
-
-![Progression of standalone workshop sketches toward the complete smart-farming controller](assets/diagrams/sketch-progression.png)
+## Upload the workshop sketches
 
 The complete standalone sketches are included below. Each sketch has its own `setup()` and `loop()`, so do not combine multiple listings in one Arduino sketch.
 
@@ -152,14 +191,14 @@ Use this progression:
 3. `Workshop - Smart Grow Light system` tests the LDR, LCD, and GPIO25 relay.
 4. `Workshop - mini weather station` tests the DHT22, LCD, and GPIO26 relay.
 5. `Workshop - automated watering system` is the first irrigation test. It turns the GPIO27 relay on when the calculated soil moisture is below 40 percent.
-6. Skip deployment of the standalone `Workshop - automated tank refilling` sketch. Its `waterLevel` variable remains zero, so an active-low refill relay will remain on. This defect is present in the reference and has not been changed.
-7. Upload `Workshop - Smart Farming System` for the integrated test. Its tank calculation uses `tankHeight - distance`, so it does not contain the standalone workshop's zero-level defect.
+6. `Workshop - automated tank refilling` tests the HC-SR04 and GPIO14 relay. The learner listing below corrects the source bug by calculating `waterLevel = tankHeight - distance`. Test it with the relay LED only before connecting a refill pump.
+7. Upload `Workshop - Smart Farming System` for the integrated test.
 
 ## Complete source sketches
 
 ![Arduino sketch structure and the repeating smart-farm control loop](assets/diagrams/code-structure.png)
 
-The listings in this section reproduce the complete source sketches from the reference document. No logic has been corrected or extended. Compile and upload only one listing at a time.
+These listings follow the supplied workshop source. The standalone tank-refilling listing contains one documented correction: `waterLevel` now uses `tankHeight - distance`, matching the integrated sketch. Compile and upload only one listing at a time.
 
 ### Smart Alarm Button and Buzzer
 
@@ -332,7 +371,7 @@ void loop() {
 
 ### Automated Tank Refilling Workshop
 
-Do not connect a real refill pump while running this standalone workshop sketch. As supplied, it leaves `waterLevel` at zero, so an active-low refill relay stays on. The listing is included unchanged for completeness.
+The source document sets `waterLevel` to zero, which keeps an active-low refill relay on. The learner listing fixes that defect. Keep the real refill pump disconnected until the relay LED responds correctly to changing distance.
 
 ```cpp
 #include <Wire.h>
@@ -365,7 +404,7 @@ void loop() {
   long duration = pulseIn(echoPin, HIGH);
   int distance = duration * 0.034 / 2;
 
-  int waterLevel = 0;
+  int waterLevel = tankHeight - distance;
 
   if (waterLevel < 0) {
     waterLevel = 0;
@@ -521,11 +560,9 @@ void loop() {
 
 ## Test the automated watering stage
 
-![Dry and moist soil states used to test automatic irrigation](assets/diagrams/irrigation-test.png)
-
 Keep the pump disconnected from the relay contacts during the first test.
 
-1. Upload the standalone automated watering sketch exactly as supplied.
+1. Upload the standalone automated watering sketch above.
 2. Open Serial Monitor at 115200 baud.
 3. Hold the soil probe in air. The raw value should move toward the dry end, and the LCD should show a low moisture percentage. The GPIO27 relay LED should turn on.
 4. Place only the sensing area into moist soil or a controlled test sample. Do not immerse the electronics. The displayed percentage should rise, and the relay should turn off above 40 percent.
@@ -539,7 +576,7 @@ Resistive soil probes corrode when continuously energized. Treat the supplied se
 
 ![Complete greenhouse system test for light, temperature, soil, and tank level](assets/diagrams/complete-system-test.png)
 
-Upload the final `Workshop - Smart Farming System` sketch exactly as supplied, then test one input at a time:
+Upload the final `Workshop - Smart Farming System` sketch above, then test one input at a time:
 
 1. Cover and uncover the LDR. Below 30 percent light, the GPIO25 relay should turn on.
 2. Warm the DHT22 gently. Above 30.0 C, the GPIO26 relay should turn on.
@@ -548,7 +585,7 @@ Upload the final `Workshop - Smart Farming System` sketch exactly as supplied, t
 5. Watch both LCD screens. The display alternates every two seconds between light and temperature states, then soil and water-level states.
 6. Reconnect and test only one real load at a time. Finish with all loads connected and observe at least one complete on-off cycle for every channel.
 
-The reference slide's example states that a 45 cm tank with a 20 cm air gap gives a 15 cm water level. That arithmetic is incorrect. The final code's calculation gives 25 cm. This tutorial records the discrepancy without editing either reference file.
+The training slide's example states that a 45 cm tank with a 20 cm air gap gives a 15 cm water level. The correct calculation is `45 - 20 = 25 cm`. Both learner tank sketches use that subtraction.
 
 ## Acceptance checklist
 
@@ -563,7 +600,7 @@ The reference slide's example states that a 45 cm tank with a 20 cm air gap give
 - Each load has an adequate power supply and fuse.
 - The controller and all connectors are protected from water, condensation, insects, and strain on cables.
 - The external antenna is securely connected before relying on future Wi-Fi operation.
-- The system remains supervised because the supplied software lacks production safety interlocks.
+- The system remains supervised because the workshop software lacks production safety interlocks.
 
 ## Troubleshooting
 
@@ -571,19 +608,17 @@ The reference slide's example states that a 45 cm tank with a 20 cm air gap give
 
 | Symptom                                              | Check                                                                                                                      |
 | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `LiquidCrystal_I2C.h` not found                      | Install a compatible LiquidCrystal I2C library                                                                             |
-| `lcd.begin()` compile error                          | Remove the incompatible library and install one with a zero-argument `begin()` API                                         |
-| `DHT.h` not found                                    | Install Adafruit's DHT sensor library and its Unified Sensor dependency                                                    |
+| `LiquidCrystal_I2C.h` not found                      | Copy the bundled `Arduino-LiquidCrystal-I2C-library-master` folder into the sketchbook's `libraries` folder                 |
+| `lcd.begin()` compile error                          | Remove the conflicting LCD library and copy the bundled `Arduino-LiquidCrystal-I2C-library-master` folder again             |
+| `DHT.h` not found                                    | Copy the bundled `DHT_sensor_library` and `Adafruit_Unified_Sensor` folders into the sketchbook's `libraries` folder        |
 | LCD backlight is on but text is absent               | Check address `0x27`, contrast, SDA/SCL wiring, and logic-level safety                                                     |
 | Relay turns on when it should be off                 | Confirm that the board is active low and the load is on `NO`, not `NC`                                                     |
 | Soil percentage is fixed at 0 or 100                 | Measure the raw serial values; the sensor does not match the fixed 4095-to-2000 mapping or its output voltage is incorrect |
-| Refill pump stays on with the standalone tank sketch | Do not deploy that sketch; its water level is never calculated                                                             |
+| Refill relay stays on in the tank sketch             | Confirm the code contains `waterLevel = tankHeight - distance`, then check the measured distance and active-low relay logic |
 | Full-system tank level is wrong                      | Check the 45 cm tank-height assumption, sensor mounting, reflections, and Echo level shifting                              |
 | Upload fails at `Connecting`                         | Check the USB data cable and port; hold Boot while upload begins                                                           |
 | ESP32 resets when a relay or pump starts             | Use separate adequate load power, improve grounding and suppression, and do not power loads through the ESP32              |
 
-## Limits of the unchanged code
+## Limits of the workshop code
 
-![Current prototype limitations and optional future improvements](assets/diagrams/limits.png)
-
-The supplied code is suitable for a supervised workshop demonstration. Before field deployment, a later software revision should add sensor-failure handling, calibrated endpoints, hysteresis, maximum pump runtimes, minimum tank interlocks, ultrasonic timeouts, persistent alarms, watchdog behavior, and network telemetry. Those improvements are not included here because they would change the code supplied in `ref`.
+The learner code corrects the standalone tank calculation but otherwise retains the simple workshop logic. It is suitable for a supervised demonstration. Before field deployment, add sensor-failure handling, calibrated endpoints, hysteresis, maximum pump runtimes, minimum tank interlocks, ultrasonic timeouts, persistent alarms, watchdog behavior, and network telemetry.
