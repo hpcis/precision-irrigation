@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+  <title id="title">Blynk manual device activation click path</title>
+  <desc id="desc">A learner guide showing the web dashboard steps from Devices to creating a device and copying its authentication token.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#2457d6"/>
+    </marker>
+    <style>
+      text { font-family: Arial, sans-serif; }
+      .title { font-size: 42px; font-weight: 700; fill: #17243b; }
+      .subtitle { font-size: 24px; fill: #40516d; }
+      .step { font-size: 22px; font-weight: 700; fill: #ffffff; }
+      .heading { font-size: 25px; font-weight: 700; fill: #17243b; }
+      .body { font-size: 21px; fill: #34445d; }
+      .small { font-size: 19px; fill: #52627a; }
+      .card { fill: #ffffff; stroke: #b7c5dd; stroke-width: 3; }
+      .arrow { fill: none; stroke: #2457d6; stroke-width: 6; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="760" fill="#f4f7fc"/>
+  <text x="800" y="64" text-anchor="middle" class="title">Create one Blynk device, then copy its Auth Token</text>
+  <text x="800" y="103" text-anchor="middle" class="subtitle">All six steps happen in Blynk.Console on the WEB DASHBOARD</text>
+
+  <g transform="translate(55 155)">
+    <rect class="card" width="340" height="190" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#2457d6"/>
+    <text x="45" y="53" text-anchor="middle" class="step">1</text>
+    <text x="85" y="53" class="heading">Devices</text>
+    <text x="30" y="103" class="body">Left navigation</text>
+    <text x="30" y="137" class="body">→ click Devices</text>
+    <text x="30" y="169" class="small">An empty page is normal.</text>
+  </g>
+  <path class="arrow" d="M405 250 H455"/>
+
+  <g transform="translate(465 155)">
+    <rect class="card" width="340" height="190" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#2457d6"/>
+    <text x="45" y="53" text-anchor="middle" class="step">2</text>
+    <text x="85" y="53" class="heading">+ New Device</text>
+    <text x="30" y="103" class="body">Choose</text>
+    <text x="30" y="137" class="body">“From template”</text>
+    <text x="30" y="169" class="small">Do not choose Quickstart.</text>
+  </g>
+  <path class="arrow" d="M815 250 H865"/>
+
+  <g transform="translate(875 155)">
+    <rect class="card" width="670" height="190" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#2457d6"/>
+    <text x="45" y="53" text-anchor="middle" class="step">3</text>
+    <text x="85" y="53" class="heading">Choose the matching group</text>
+    <text x="30" y="103" class="body">Template: Irrigation G1</text>
+    <text x="350" y="103" class="body">Device: TU Box G1</text>
+    <text x="30" y="140" class="small">Use G2, G3, or G4 at that group's station.</text>
+    <text x="30" y="171" class="small">Names contain spaces—never dashes.</text>
+  </g>
+
+  <path class="arrow" d="M1210 355 V405"/>
+
+  <g transform="translate(875 415)">
+    <rect class="card" width="670" height="235" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#2457d6"/>
+    <text x="45" y="53" text-anchor="middle" class="step">4</text>
+    <text x="85" y="53" class="heading">Create → open Developer Tools</text>
+    <text x="30" y="105" class="body">Open Firmware Configuration</text>
+    <rect x="30" y="127" width="610" height="67" rx="10" fill="#edf3ff" stroke="#8da9e8" stroke-width="2"/>
+    <text x="50" y="157" class="small">#define BLYNK_AUTH_TOKEN</text>
+    <text x="50" y="184" class="small">“copy-this-device-token”</text>
+    <text x="30" y="222" class="small">Copy only from your group's device.</text>
+  </g>
+  <path class="arrow" d="M865 533 H815"/>
+
+  <g transform="translate(465 415)">
+    <rect class="card" width="340" height="235" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#2457d6"/>
+    <text x="45" y="53" text-anchor="middle" class="step">5</text>
+    <text x="85" y="53" class="heading">Cross-check</text>
+    <text x="30" y="106" class="body">Template ID</text>
+    <text x="30" y="141" class="body">Template Name</text>
+    <text x="30" y="176" class="body">Auth Token</text>
+    <text x="30" y="213" class="small">All must be one group.</text>
+  </g>
+  <path class="arrow" d="M455 533 H405"/>
+
+  <g transform="translate(55 415)">
+    <rect class="card" width="340" height="235" rx="22"/>
+    <circle cx="45" cy="45" r="27" fill="#1a8754"/>
+    <text x="45" y="53" text-anchor="middle" class="step">6</text>
+    <text x="85" y="53" class="heading">Expected result</text>
+    <text x="30" y="108" class="body">Device exists</text>
+    <text x="30" y="145" class="body">Status: Offline</text>
+    <text x="30" y="183" class="small">Offline is correct until</text>
+    <text x="30" y="213" class="small">the sketch connects.</text>
+  </g>
+
+  <rect x="300" y="690" width="1000" height="46" rx="23" fill="#fff5d8" stroke="#e0aa28" stroke-width="2"/>
+  <text x="800" y="721" text-anchor="middle" class="body">Never paste the Blynk account password into Arduino code.</text>
+</svg>

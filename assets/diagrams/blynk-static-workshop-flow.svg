@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700" viewBox="0 0 1600 700" role="img" aria-labelledby="title desc">
+  <title id="title">Blynk workshop flow using manual device activation</title>
+  <desc id="desc">Six steps move from the Blynk web dashboard to the mobile dashboard and ESP32 irrigation box.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="700" rx="28" fill="#f8fafc"/>
+  <text x="800" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0f172a">SMALL WORKSHOP BUILD: NO EDGENT</text>
+  <text x="800" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="#475569">The location label shows exactly where each action happens.</text>
+
+  <g font-family="Arial, sans-serif" filter="url(#shadow)">
+    <g transform="translate(70 180)">
+      <rect width="400" height="170" rx="22" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#1d4ed8">WEB DASHBOARD · STEP 1</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Create template</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Add datastreams V0–V3</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Save the template</text>
+    </g>
+    <g transform="translate(600 180)">
+      <rect width="400" height="170" rx="22" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#1d4ed8">WEB DASHBOARD · STEP 2</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Create device</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Choose the group template</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Record Template Name, ID + Token</text>
+    </g>
+    <g transform="translate(1130 180)">
+      <rect width="400" height="170" rx="22" fill="#ede9fe" stroke="#7c3aed" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#6d28d9">MOBILE DEVICE · STEP 3</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Build dashboard</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Gauge V0 · Button V1</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Values V2 and V3</text>
+    </g>
+
+    <g transform="translate(70 470)">
+      <rect width="400" height="170" rx="22" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#15803d">ESP IRRIGATION BOX · STEP 4</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Complete sketch</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Paste Wi-Fi name + password</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Paste Template Name, ID + Token</text>
+    </g>
+    <g transform="translate(600 470)">
+      <rect width="400" height="170" rx="22" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#15803d">ESP IRRIGATION BOX · STEP 5</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Upload and connect</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Serial Monitor shows Ready</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Device becomes Online</text>
+    </g>
+    <g transform="translate(1130 470)">
+      <rect width="400" height="170" rx="22" fill="#fef3c7" stroke="#d97706" stroke-width="4"/>
+      <text x="28" y="40" font-size="19" font-weight="700" fill="#b45309">MOBILE + BOX · STEP 6</text>
+      <text x="28" y="83" font-size="29" font-weight="700" fill="#0f172a">Test safely</text>
+      <text x="28" y="119" font-size="21" fill="#334155">Relay LED first · no pump</text>
+      <text x="28" y="148" font-size="21" fill="#334155">Then supervised water test</text>
+    </g>
+  </g>
+
+  <g fill="none" stroke="#334155" stroke-width="6" marker-end="url(#arrow)">
+    <path d="M480 265 H580"/>
+    <path d="M1010 265 H1110"/>
+    <path d="M1330 365 C1330 420 270 410 270 450"/>
+    <path d="M480 555 H580"/>
+    <path d="M1010 555 H1110"/>
+  </g>
+</svg>
